@@ -21,7 +21,7 @@ body {
 
 .container {
     width: 92%;
-    max-width: 800px;
+    max-width: 850px;
     margin: auto;
     padding: 25px 0 60px;
 }
@@ -54,6 +54,8 @@ textarea:focus {
     border-color: #8064a8;
 }
 
+/* CATEGORY BUTTONS */
+
 .category-list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -75,9 +77,7 @@ textarea:focus {
     color: white;
 }
 
-.specific-title {
-    margin-top: 20px;
-}
+/* SPECIFIC EMOTIONS */
 
 .emotion-list {
     display: grid;
@@ -100,6 +100,8 @@ textarea:focus {
     border-color: #8064a8;
 }
 
+/* SAVE */
+
 .save-button {
     width: 100%;
     margin-top: 20px;
@@ -116,6 +118,54 @@ textarea:focus {
 .save-button:hover {
     background: #634b86;
 }
+
+.message {
+    margin-top: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* PIE CHART */
+
+.chart-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+canvas {
+    max-width: 420px;
+    width: 100%;
+    height: auto;
+}
+
+.chart-legend {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.legend-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+/* ENTRIES */
 
 .entry {
     border: 1px solid #ddd;
@@ -145,6 +195,17 @@ textarea:focus {
     font-weight: bold;
 }
 
+.advice {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f3eef8;
+    border-radius: 12px;
+}
+
+.advice strong {
+    color: #70548f;
+}
+
 .delete-button {
     margin-top: 12px;
     border: none;
@@ -159,10 +220,16 @@ textarea:focus {
     padding: 20px;
 }
 
-.message {
-    margin-top: 12px;
+.locked {
     text-align: center;
-    font-weight: bold;
+    padding: 30px 10px;
+    color: #777;
+}
+
+.analysis-range {
+    text-align: center;
+    color: #777;
+    font-size: 14px;
 }
 
 @media (max-width: 600px) {
@@ -193,6 +260,10 @@ what you felt.
 </p>
 
 
+<!-- =========================
+     NEW ENTRY
+========================= -->
+
 <div class="card">
 
 <h2>📔 New Entry</h2>
@@ -211,11 +282,7 @@ what you felt.
 </div>
 
 
-<h3
-    class="specific-title"
-    id="specificTitle">
-2. Choose a specific emotion
-</h3>
+<h3>2. Choose a specific emotion</h3>
 
 <div
     class="emotion-list"
@@ -240,6 +307,25 @@ Save Entry
 
 </div>
 
+
+<!-- =========================
+     100 ENTRY ANALYSIS
+========================= -->
+
+<div class="card">
+
+<h2>📊 Emotional Profile</h2>
+
+<p class="analysis-range" id="analysisRange"></p>
+
+<div id="analysisContent"></div>
+
+</div>
+
+
+<!-- =========================
+     DIARY
+========================= -->
 
 <div class="card">
 
@@ -409,7 +495,111 @@ const categories = [
 
 
 /* =====================================
-   APP STATE
+   EMOTIONAL CYCLE / ADVICE
+===================================== */
+
+const advice = {
+
+    "Angry": {
+
+        positive: [
+            "Passionate",
+            "Determined",
+            "Intense"
+        ],
+
+        destination: "Confident",
+
+        line:
+            "Your intensity can become confidence when you direct it toward something constructive.",
+
+        quote:
+            "Anger can show that something matters. Decide what you want to do with that energy."
+
+    },
+
+
+    "Confident": {
+
+        positive: [
+            "Reflective",
+            "Contemplative",
+            "Vulnerable"
+        ],
+
+        destination: "Sad",
+
+        line:
+            "Confidence is powerful, but reflection can keep confidence from becoming pride or ego.",
+
+        quote:
+            "Strength does not disappear when you pause and look inward."
+
+    },
+
+
+    "Sad": {
+
+        positive: [
+            "Hopeful",
+            "Inspired",
+            "Grateful",
+            "Relieved"
+        ],
+
+        destination: "Happy",
+
+        line:
+            "When sadness becomes overwhelming, look for one small thing that can bring hope or relief.",
+
+        quote:
+            "You do not have to solve everything today. Find one reason to keep moving."
+
+    },
+
+
+    "Happy": {
+
+        positive: [
+            "Calm",
+            "Composed",
+            "Controlled"
+        ],
+
+        destination: "Serious",
+
+        line:
+            "Joy is valuable, but slowing down can help keep excitement from becoming reckless or exhausting.",
+
+        quote:
+            "You can enjoy the moment without letting the moment control you."
+
+    },
+
+
+    "Serious": {
+
+        positive: [
+            "Passionate",
+            "Determined",
+            "Intense"
+        ],
+
+        destination: "Angry",
+
+        line:
+            "When thinking becomes excessive or detachment keeps you stuck, action and passion may help.",
+
+        quote:
+            "Not every answer is found by thinking longer. Sometimes you have to move."
+
+    }
+
+};
+
+
+/* =====================================
+   STATE
 ===================================== */
 
 let selectedCategory = null;
@@ -418,11 +608,14 @@ let selectedEmotion = null;
 
 let entries = [];
 
+
 try {
 
     entries =
         JSON.parse(
-            localStorage.getItem("emotiaryEntries")
+            localStorage.getItem(
+                "emotiaryEntries"
+            )
         ) || [];
 
 } catch (error) {
@@ -433,7 +626,7 @@ try {
 
 
 /* =====================================
-   CREATE CATEGORY BUTTONS
+   CREATE CATEGORIES
 ===================================== */
 
 function createCategories() {
@@ -445,55 +638,72 @@ function createCategories() {
 
     container.innerHTML = "";
 
-    categories.forEach(function(category) {
+    categories.forEach(
+        function(category) {
 
-        const button =
-            document.createElement("button");
-
-        button.type = "button";
-
-        button.className = "category";
-
-        button.textContent =
-            category.name;
-
-        button.style.borderColor =
-            category.color;
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                selectedCategory =
-                    category;
-
-                selectedEmotion =
-                    null;
-
-                document
-                    .querySelectorAll(
-                        ".category"
-                    )
-                    .forEach(function(btn) {
-
-                        btn.classList.remove(
-                            "active"
-                        );
-
-                    });
-
-                button.classList.add(
-                    "active"
+            const button =
+                document.createElement(
+                    "button"
                 );
 
-                createEmotions(category);
+            button.type = "button";
 
-            }
-        );
+            button.className =
+                "category";
 
-        container.appendChild(button);
+            button.textContent =
+                category.name;
 
-    });
+            button.style.borderColor =
+                category.color;
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    selectedCategory =
+                        category;
+
+                    selectedEmotion =
+                        null;
+
+
+                    document
+                        .querySelectorAll(
+                            ".category"
+                        )
+                        .forEach(
+                            function(btn) {
+
+                                btn.classList
+                                    .remove(
+                                        "active"
+                                    );
+
+                            }
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    createEmotions(
+                        category
+                    );
+
+                }
+            );
+
+
+            container.appendChild(
+                button
+            );
+
+        }
+    );
 
 }
 
@@ -511,6 +721,7 @@ function createEmotions(category) {
 
     container.innerHTML = "";
 
+
     category.emotions.forEach(
         function(emotion) {
 
@@ -527,12 +738,14 @@ function createEmotions(category) {
             button.textContent =
                 emotion;
 
+
             button.addEventListener(
                 "click",
                 function() {
 
                     selectedEmotion =
                         emotion;
+
 
                     document
                         .querySelectorAll(
@@ -549,12 +762,14 @@ function createEmotions(category) {
                             }
                         );
 
+
                     button.classList.add(
                         "active"
                     );
 
                 }
             );
+
 
             container.appendChild(
                 button
@@ -592,6 +807,7 @@ document
                 );
 
                 return;
+
             }
 
 
@@ -602,6 +818,7 @@ document
                 );
 
                 return;
+
             }
 
 
@@ -612,6 +829,7 @@ document
                 );
 
                 return;
+
             }
 
 
@@ -647,18 +865,19 @@ document
 
                 localStorage.setItem(
                     "emotiaryEntries",
-                    JSON.stringify(entries)
+                    JSON.stringify(
+                        entries
+                    )
                 );
 
             } catch (error) {
 
                 showMessage(
-                    "Could not save to this browser."
+                    "Could not save this entry."
                 );
 
-                console.error(error);
-
                 return;
+
             }
 
 
@@ -681,9 +900,10 @@ document
                 .forEach(
                     function(button) {
 
-                        button.classList.remove(
-                            "active"
-                        );
+                        button.classList
+                            .remove(
+                                "active"
+                            );
 
                     }
                 );
@@ -703,6 +923,8 @@ document
 
             displayEntries();
 
+            updateAnalysis();
+
         }
     );
 
@@ -721,6 +943,7 @@ function showMessage(text) {
     message.textContent =
         text;
 
+
     setTimeout(
         function() {
 
@@ -735,6 +958,483 @@ function showMessage(text) {
 
 
 /* =====================================
+   100-ENTRY ANALYSIS
+===================================== */
+
+function getLatest100() {
+
+    return entries.slice(
+        Math.max(
+            0,
+            entries.length - 100
+        )
+    );
+
+}
+
+
+/* =====================================
+   PIE CHART
+===================================== */
+
+function updateAnalysis() {
+
+    const content =
+        document.getElementById(
+            "analysisContent"
+        );
+
+    const range =
+        document.getElementById(
+            "analysisRange"
+        );
+
+
+    if (entries.length < 100) {
+
+        range.textContent =
+            entries.length +
+            " / 100 entries recorded";
+
+
+        content.innerHTML =
+            '<div class="locked">' +
+            '<h3>🔒 Emotional Profile Locked</h3>' +
+            '<p>' +
+            'Complete 100 diary entries to unlock your emotional pie chart.' +
+            '</p>' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    const latest =
+        getLatest100();
+
+
+    const counts = {};
+
+
+    categories.forEach(
+        function(category) {
+
+            counts[
+                category.name
+            ] = 0;
+
+        }
+    );
+
+
+    latest.forEach(
+        function(entry) {
+
+            if (
+                counts[
+                    entry.category
+                ] !== undefined
+            ) {
+
+                counts[
+                    entry.category
+                ]++;
+
+            }
+
+        }
+    );
+
+
+    const firstNumber =
+        latest[0].number;
+
+    const lastNumber =
+        latest[
+            latest.length - 1
+        ].number;
+
+
+    range.textContent =
+        "Analyzing entries #" +
+        firstNumber +
+        "–#" +
+        lastNumber;
+
+
+    content.innerHTML = "";
+
+
+    const chartArea =
+        document.createElement(
+            "div"
+        );
+
+    chartArea.className =
+        "chart-area";
+
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width = 420;
+
+    canvas.height = 420;
+
+
+    chartArea.appendChild(
+        canvas
+    );
+
+
+    const legend =
+        document.createElement(
+            "div"
+        );
+
+    legend.className =
+        "chart-legend";
+
+
+    chartArea.appendChild(
+        legend
+    );
+
+
+    content.appendChild(
+        chartArea
+    );
+
+
+    drawPieChart(
+        canvas,
+        counts
+    );
+
+
+    categories.forEach(
+        function(category) {
+
+            const percentage =
+                Math.round(
+                    (
+                        counts[
+                            category.name
+                        ] / 100
+                    ) * 100
+                );
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "legend-item";
+
+
+            item.innerHTML =
+
+                '<div class="legend-left">' +
+
+                '<span class="legend-dot" ' +
+                'style="background:' +
+                category.color +
+                '"></span>' +
+
+                '<span>' +
+                category.name +
+                '</span>' +
+
+                '</div>' +
+
+                '<strong>' +
+                percentage +
+                '%</strong>';
+
+
+            legend.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================
+   DRAW PIE CHART
+===================================== */
+
+function drawPieChart(
+    canvas,
+    counts
+) {
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    const total = 100;
+
+    const centerX =
+        canvas.width / 2;
+
+    const centerY =
+        canvas.height / 2;
+
+    const radius =
+        170;
+
+
+    let startAngle =
+        -Math.PI / 2;
+
+
+    categories.forEach(
+        function(category) {
+
+            const value =
+                counts[
+                    category.name
+                ];
+
+
+            const slice =
+                (
+                    value / total
+                ) *
+                Math.PI *
+                2;
+
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                centerX,
+                centerY
+            );
+
+            ctx.arc(
+                centerX,
+                centerY,
+                radius,
+                startAngle,
+                startAngle + slice
+            );
+
+            ctx.closePath();
+
+
+            ctx.fillStyle =
+                category.color;
+
+            ctx.fill();
+
+
+            ctx.strokeStyle =
+                "#ffffff";
+
+            ctx.lineWidth = 3;
+
+            ctx.stroke();
+
+
+            startAngle += slice;
+
+        }
+    );
+
+
+    /* center hole */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        centerX,
+        centerY,
+        65,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#302b27";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+    ctx.font =
+        "bold 20px Arial";
+
+    ctx.fillText(
+        "100",
+        centerX,
+        centerY - 10
+    );
+
+
+    ctx.font =
+        "14px Arial";
+
+    ctx.fillText(
+        "entries",
+        centerX,
+        centerY + 15
+    );
+
+}
+
+
+/* =====================================
+   ADVICE
+===================================== */
+
+function getAdvice(
+    category,
+    emotion
+) {
+
+    const data =
+        advice[category];
+
+
+    if (!data) {
+        return "";
+    }
+
+
+    const negativeEmotions = {
+
+        Angry: [
+            "Angry",
+            "Irritated",
+            "Frustrated",
+            "Furious",
+            "Agitated",
+            "Tense",
+            "Suspicious",
+            "Wary",
+            "Alarmed",
+            "Impatient",
+            "Restless",
+            "Defensive",
+            "Provoked",
+            "Uneasy",
+            "Overwhelmed"
+        ],
+
+        Confident: [
+            "Proud",
+            "Superior",
+            "Envious",
+            "Jealous",
+            "Humiliated"
+        ],
+
+        Sad: [
+            "Hopeless",
+            "Melancholic",
+            "Pessimistic",
+            "Lonely",
+            "Regretful",
+            "Guilty",
+            "Ashamed",
+            "Discouraged",
+            "Miserable",
+            "Grieving",
+            "Resigned",
+            "Yearning",
+            "Insecure",
+            "Empty",
+            "Despairing"
+        ],
+
+        Happy: [
+            "Overjoyed",
+            "Excited",
+            "Euphoric",
+            "Energetic"
+        ],
+
+        Serious: [
+            "Detached",
+            "Skeptical",
+            "Doubtful",
+            "Confused",
+            "Perplexed",
+            "Concerned",
+            "Cautious",
+            "Uncertain"
+        ]
+
+    };
+
+
+    if (
+        negativeEmotions[
+            category
+        ] &&
+        negativeEmotions[
+            category
+        ].includes(emotion)
+    ) {
+
+        return `
+
+            <div class="advice">
+
+                <strong>
+                    🌱 A possible direction
+                </strong>
+
+                <p>
+                    ${data.line}
+                </p>
+
+                <p>
+                    <strong>
+                        Consider:
+                    </strong>
+
+                    ${data.destination}
+                    →
+                    ${data.positive.join(", ")}
+                </p>
+
+                <p>
+                    💬 ${data.quote}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =====================================
    DISPLAY ENTRIES
 ===================================== */
 
@@ -744,6 +1444,7 @@ function displayEntries() {
         document.getElementById(
             "entries"
         );
+
 
     container.innerHTML = "";
 
@@ -771,6 +1472,7 @@ function displayEntries() {
                         "div"
                     );
 
+
                 div.className =
                     "entry";
 
@@ -783,11 +1485,15 @@ function displayEntries() {
                     '</div>' +
 
                     '<div class="entry-date">' +
-                    escapeHTML(entry.date) +
+                    escapeHTML(
+                        entry.date
+                    ) +
                     '</div>' +
 
                     '<p>' +
-                    escapeHTML(entry.text) +
+                    escapeHTML(
+                        entry.text
+                    ) +
                     '</p>' +
 
                     '<span ' +
@@ -808,14 +1514,16 @@ function displayEntries() {
 
                     '</span>' +
 
+                    getAdvice(
+                        entry.category,
+                        entry.emotion
+                    ) +
+
                     '<br>' +
 
                     '<button ' +
                     'class="delete-button" ' +
-                    'type="button" ' +
-                    'data-id="' +
-                    entry.id +
-                    '">' +
+                    'type="button">' +
 
                     'Delete Entry' +
 
@@ -868,11 +1576,15 @@ function deleteEntry(id) {
 
     localStorage.setItem(
         "emotiaryEntries",
-        JSON.stringify(entries)
+        JSON.stringify(
+            entries
+        )
     );
 
 
     displayEntries();
+
+    updateAnalysis();
 
 }
 
@@ -888,8 +1600,10 @@ function escapeHTML(text) {
             "div"
         );
 
+
     div.textContent =
         text;
+
 
     return div.innerHTML;
 
@@ -903,6 +1617,8 @@ function escapeHTML(text) {
 createCategories();
 
 displayEntries();
+
+updateAnalysis();
 
 </script>
 
