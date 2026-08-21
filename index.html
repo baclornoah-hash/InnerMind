@@ -647,7 +647,6 @@ function renderEmotionButtons() {
             <div class="emotion-group-title">
                 ${group.emoji}
                 ${group.name}
-                <span>${group.emotions.length} choices</span>
             </div>
 
             <div class="emotion-buttons"></div>
@@ -661,18 +660,21 @@ function renderEmotionButtons() {
             const button =
                 document.createElement("button");
 
+            button.type = "button";
+
             button.className = "emotion-btn";
 
             button.dataset.group = group.id;
 
             button.textContent = emotion;
 
-            button.onclick = () =>
+            button.onclick = function() {
                 toggleEmotion(
                     emotion,
                     group.id,
                     button
                 );
+            };
 
             buttons.appendChild(button);
 
@@ -681,7 +683,6 @@ function renderEmotionButtons() {
         container.appendChild(groupDiv);
 
     });
-
 }
 
 
@@ -689,11 +690,39 @@ function renderEmotionButtons() {
    SELECT EMOTION
 ----------------------------- */
 
-function toggleEmotion(
-    emotion,
-    group,
-    button
-) {
+function toggleEmotion(emotion, group, button) {
+
+    const index = selectedEmotions.findIndex(
+        e => e.name === emotion
+    );
+
+    // If already selected, remove it
+    if (index !== -1) {
+
+        selectedEmotions.splice(index, 1);
+
+        button.classList.remove("selected");
+
+    } else {
+
+        // Maximum of 5 emotions
+        if (selectedEmotions.length >= 5) {
+
+            alert("You can choose a maximum of 5 emotions.");
+
+            return;
+        }
+
+        selectedEmotions.push({
+            name: emotion,
+            group: group
+        });
+
+        button.classList.add("selected");
+    }
+
+    updateSelectedCount();
+}
 
     const index =
         selectedEmotions.findIndex(
