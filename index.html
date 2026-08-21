@@ -3,734 +3,360 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Emotiary — Your Emotional Diary</title>
+<title>Emotiary</title>
 
 <style>
-:root {
-    --bg: #f7f3ee;
-    --card: #fffdf9;
-    --text: #302b27;
-    --muted: #81776f;
-    --border: #e7ddd4;
-    --accent: #8064a8;
-    --accent-dark: #634b86;
-    --shadow: 0 10px 30px rgba(60, 45, 35, 0.08);
-
-    --angry: #c95c5c;
-    --sad: #668bb8;
-    --serious: #777777;
-    --confident: #9b70bd;
-    --happy: #d8a83e;
-    --anxious: #5e9e9a;
-    --calm: #6b9c87;
-    --passionate: #d7794b;
-}
-
-* {
-    box-sizing: border-box;
-}
-
 body {
+    font-family: Arial, sans-serif;
+    background: #f7f2ec;
+    color: #302b27;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-}
-
-button,
-textarea {
-    font: inherit;
-}
-
-header {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.header-inner {
-    max-width: 1050px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--accent-dark);
-}
-
-.tagline {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-}
-
-.header-count {
-    background: #f0eaf6;
-    color: var(--accent-dark);
-    padding: 9px 13px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-main {
-    max-width: 1050px;
-    margin: auto;
-    padding: 25px 16px 60px;
-}
-
-.hero {
-    background: linear-gradient(135deg, #eee5f6, #fff7ed);
-    border-radius: 25px;
-    padding: 28px;
-    margin-bottom: 20px;
-}
-
-.hero h1 {
-    margin: 0 0 8px;
-    font-size: clamp(28px, 7vw, 42px);
-}
-
-.hero p {
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.6;
-    max-width: 650px;
-}
-
-.card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 22px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-}
-
-.card-title {
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 5px;
-}
-
-.card-subtitle {
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 18px;
-}
-
-textarea {
-    width: 100%;
-    min-height: 180px;
-    resize: vertical;
-    border: 1px solid var(--border);
-    background: #fffefa;
-    border-radius: 16px;
-    padding: 16px;
-    outline: none;
-    color: var(--text);
-    line-height: 1.6;
-}
-
-textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(128,100,168,.1);
-}
-
-.selected-count {
-    margin: 18px 0 12px;
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 700;
-}
-
-.emotion-group {
-    margin-bottom: 20px;
-}
-
-.emotion-group-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 9px;
-    font-weight: 800;
-}
-
-.emotion-group-title span {
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.emotion-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.emotion-btn {
-    border: 1px solid var(--border);
-    background: #fff;
-    color: var(--text);
-    border-radius: 30px;
-    padding: 9px 13px;
-    cursor: pointer;
-    transition: .2s;
-    font-size: 13px;
-}
-
-.emotion-btn:hover {
-    transform: translateY(-1px);
-}
-
-.emotion-btn.selected {
-    color: white;
-    border-color: transparent;
-    transform: translateY(-1px);
-}
-
-.emotion-btn[data-group="angry"].selected { background: var(--angry); }
-.emotion-btn[data-group="sad"].selected { background: var(--sad); }
-.emotion-btn[data-group="serious"].selected { background: var(--serious); }
-.emotion-btn[data-group="confident"].selected { background: var(--confident); }
-.emotion-btn[data-group="happy"].selected { background: var(--happy); }
-.emotion-btn[data-group="anxious"].selected { background: var(--anxious); }
-.emotion-btn[data-group="calm"].selected { background: var(--calm); }
-.emotion-btn[data-group="passionate"].selected { background: var(--passionate); }
-
-.save-btn {
-    width: 100%;
-    border: none;
-    background: var(--accent);
-    color: white;
-    padding: 14px;
-    border-radius: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    margin-top: 5px;
-}
-
-.save-btn:hover {
-    background: var(--accent-dark);
-}
-
-.notice {
-    display: none;
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: 12px;
-    background: #edf6ee;
-    color: #42704b;
-    font-size: 13px;
-    text-align: center;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-.stat {
-    background: #faf7f3;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 15px;
-}
-
-.stat-number {
-    font-size: 25px;
-    font-weight: 800;
-    color: var(--accent-dark);
-}
-
-.stat-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 3px;
-}
-
-.emotion-summary {
-    margin-top: 18px;
-}
-
-.emotion-bar {
-    margin-bottom: 13px;
-}
-
-.bar-top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    margin-bottom: 5px;
-}
-
-.bar-background {
-    height: 9px;
-    background: #eee8e2;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.bar-fill {
-    height: 100%;
-    border-radius: 10px;
-    transition: width .5s;
-}
-
-.entries-list {
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
-}
-
-.entry {
-    border: 1px solid var(--border);
-    border-radius: 17px;
-    padding: 17px;
-    background: #fffefa;
-}
-
-.entry-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.entry-number {
-    font-weight: 800;
-    color: var(--accent-dark);
-}
-
-.entry-date {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.entry-text {
-    white-space: pre-wrap;
-    line-height: 1.6;
-    font-size: 14px;
-    margin-bottom: 12px;
-}
-
-.entry-emotions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.emotion-tag {
-    padding: 5px 9px;
-    border-radius: 15px;
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.delete-btn {
-    margin-top: 12px;
-    border: none;
-    background: transparent;
-    color: #a56b6b;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.empty {
-    text-align: center;
-    color: var(--muted);
-    padding: 25px 10px;
-    font-size: 14px;
-}
-
-footer {
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
     padding: 20px;
 }
 
-@media (max-width: 650px) {
-    .stats {
-        grid-template-columns: 1fr;
-    }
+.container {
+    max-width: 700px;
+    margin: auto;
+}
 
-    .hero {
-        padding: 23px;
-    }
+h1 {
+    color: #70548f;
+}
 
-    .card {
-        padding: 17px;
-    }
+textarea {
+    width: 100%;
+    height: 180px;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    resize: vertical;
+}
 
-    .header-inner {
-        align-items: flex-start;
-    }
+.emotions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+}
 
-    .header-count {
-        font-size: 11px;
-    }
+.emotion {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+}
+
+.emotion.selected {
+    background: #8064a8;
+    color: white;
+}
+
+button.save {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #8064a8;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.entry {
+    background: white;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.tag {
+    display: inline-block;
+    background: #8064a8;
+    color: white;
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 12px;
+    margin: 3px;
+}
+
+.delete {
+    margin-top: 10px;
+    border: none;
+    background: none;
+    color: #a55;
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-    <div class="header-inner">
-        <div>
-            <div class="logo">🌙 Emotiary</div>
-            <div class="tagline">Understand what you feel.</div>
-        </div>
+<div class="container">
 
-        <div class="header-count" id="entryCount">
-            0 entries
-        </div>
-    </div>
-</header>
+<h1>🌙 Emotiary</h1>
 
-<main>
+<p>Write what you're feeling.</p>
 
-<section class="hero">
-    <h1>Your emotional diary.</h1>
-    <p>
-        Write honestly. Choose what you're feeling.
-        There is no right or wrong emotion here.
-        Emotiary simply helps you understand your emotional journey.
-    </p>
-</section>
+<textarea id="diaryText" placeholder="What's on your mind?"></textarea>
 
-<section class="card">
+<p>
+<strong id="count">0 / 5 emotions selected</strong>
+</p>
 
-    <div class="card-title">✍️ New Diary Entry</div>
+<div class="emotions" id="emotions">
 
-    <div class="card-subtitle">
-        You can choose up to 5 emotions that best describe this moment.
-    </div>
+<button class="emotion" data-emotion="Angry">🔴 Angry</button>
+<button class="emotion" data-emotion="Irritated">🔴 Irritated</button>
 
-    <textarea
-        id="diaryText"
-        placeholder="What's on your mind today?"
-    ></textarea>
+<button class="emotion" data-emotion="Sad">🔵 Sad</button>
+<button class="emotion" data-emotion="Hopeless">🔵 Hopeless</button>
 
-    <div class="selected-count" id="selectedCount">
-        0 / 5 emotions selected
-    </div>
+<button class="emotion" data-emotion="Emotionless">⚫ Emotionless</button>
+<button class="emotion" data-emotion="Serious">⚫ Serious</button>
 
-    <div id="emotionContainer"></div>
+<button class="emotion" data-emotion="Confident">🟣 Confident</button>
+<button class="emotion" data-emotion="Awesome">🟣 Awesome</button>
 
-    <button class="save-btn" onclick="saveEntry()">
-        Save Entry
-    </button>
+<button class="emotion" data-emotion="Happy">🟡 Happy</button>
+<button class="emotion" data-emotion="Overjoyed">🟡 Overjoyed</button>
 
-    <div class="notice" id="notice">
-        Your entry has been saved. 💜
-    </div>
+<button class="emotion" data-emotion="Afraid">🩵 Afraid</button>
+<button class="emotion" data-emotion="Anxious">🩵 Anxious</button>
 
-</section>
+<button class="emotion" data-emotion="Calm">🌿 Calm</button>
+<button class="emotion" data-emotion="Relaxed">🌿 Relaxed</button>
 
-<section class="card">
+<button class="emotion" data-emotion="Passionate">🟠 Passionate</button>
+<button class="emotion" data-emotion="Eager">🟠 Eager</button>
 
-    <div class="card-title">📊 Your Emotional Overview</div>
+</div>
 
-    <div class="card-subtitle">
-        A simple overview of the emotions you've recorded.
-        The full 100-entry analysis will come later.
-    </div>
+<button class="save" id="saveButton">
+Save Entry
+</button>
 
-    <div class="stats">
+<h2>Your Diary</h2>
 
-        <div class="stat">
-            <div class="stat-number" id="totalEntries">0</div>
-            <div class="stat-label">Total Entries</div>
-        </div>
+<div id="entries"></div>
 
-        <div class="stat">
-            <div class="stat-number" id="totalEmotions">0</div>
-            <div class="stat-label">Emotions Recorded</div>
-        </div>
-
-        <div class="stat">
-            <div class="stat-number" id="averageEmotions">0</div>
-            <div class="stat-label">Avg. Emotions / Entry</div>
-        </div>
-
-    </div>
-
-    <div class="emotion-summary" id="emotionSummary"></div>
-
-</section>
-
-<section class="card">
-
-    <div class="card-title">📔 Your Diary</div>
-
-    <div class="card-subtitle">
-        Your most recent entries appear here.
-    </div>
-
-    <div class="entries-list" id="entriesList"></div>
-
-</section>
-
-</main>
-
-<footer>
-    Emotiary · Your emotions are yours to feel, understand, and explore.
-</footer>
-
+</div>
 
 <script>
 
-const emotionGroups = [
-
-    {
-        id: "angry",
-        emoji: "🔴",
-        name: "Angry / Irritated",
-        emotions: [
-            "Angry",
-            "Irritated",
-            "Annoyed",
-            "Frustrated",
-            "Impatient",
-            "Resentful",
-            "Furious"
-        ]
-    },
-
-    {
-        id: "sad",
-        emoji: "🔵",
-        name: "Sad / Hopeless",
-        emotions: [
-            "Sad",
-            "Lonely",
-            "Hurt",
-            "Disappointed",
-            "Discouraged",
-            "Hopeless",
-            "Miserable"
-        ]
-    },
-
-    {
-        id: "serious",
-        emoji: "⚫",
-        name: "Emotionless / Serious",
-        emotions: [
-            "Emotionless",
-            "Numb",
-            "Detached",
-            "Indifferent",
-            "Focused",
-            "Reserved",
-            "Serious",
-            "Indecisive"
-        ]
-    },
-
-    {
-        id: "confident",
-        emoji: "🟣",
-        name: "Confident / Awesome",
-        emotions: [
-            "Confident",
-            "Proud",
-            "Brave",
-            "Capable",
-            "Empowered",
-            "Accomplished",
-            "Awesome"
-        ]
-    },
-
-    {
-        id: "happy",
-        emoji: "🟡",
-        name: "Happy / Overjoyed",
-        emotions: [
-            "Happy",
-            "Cheerful",
-            "Content",
-            "Grateful",
-            "Joyful",
-            "Optimistic",
-            "Overjoyed"
-        ]
-    },
-
-    {
-        id: "anxious",
-        emoji: "🩵",
-        name: "Afraid / Anxious",
-        emotions: [
-            "Afraid",
-            "Anxious",
-            "Worried",
-            "Nervous",
-            "Uneasy",
-            "Overthinking",
-            "Insecure"
-        ]
-    },
-
-    {
-        id: "calm",
-        emoji: "🌿",
-        name: "Calm / Relaxed",
-        emotions: [
-            "Calm",
-            "Relaxed",
-            "Peaceful",
-            "Safe",
-            "Comfortable",
-            "Rested",
-            "Serene"
-        ]
-    },
-
-    {
-        id: "passionate",
-        emoji: "🟠",
-        name: "Passionate / Eager",
-        emotions: [
-            "Passionate",
-            "Eager",
-            "Motivated",
-            "Inspired",
-            "Curious",
-            "Energetic",
-            "Determined"
-        ]
-    }
-
-];
-
-let entries = JSON.parse(
-    localStorage.getItem("emotiaryEntries") || "[]"
-);
-
 let selectedEmotions = [];
 
+let entries =
+    JSON.parse(localStorage.getItem("emotiaryEntries") || "[]");
 
-/* -----------------------------
-   CREATE EMOTION BUTTONS on
------------------------------ */
 
-function renderEmotionButtons() {
+/* EMOTION SELECTION */
 
-    const container =
-        document.getElementById("emotionContainer");
+document.querySelectorAll(".emotion").forEach(button => {
 
-    container.innerHTML = "";
+    button.addEventListener("click", function() {
 
-    emotionGroups.forEach(group => {
+        const emotion =
+            this.dataset.emotion;
 
-        const groupDiv =
-            document.createElement("div");
+        const index =
+            selectedEmotions.indexOf(emotion);
 
-        groupDiv.className = "emotion-group";
+        if (index !== -1) {
 
-        groupDiv.innerHTML = `
-            <div class="emotion-group-title">
-                ${group.emoji}
-                ${group.name}
-            </div>
+            selectedEmotions.splice(index, 1);
 
-            <div class="emotion-buttons"></div>
-        `;
+            this.classList.remove("selected");
 
-        const buttons =
-            groupDiv.querySelector(".emotion-buttons");
+        } else {
 
-        group.emotions.forEach(emotion => {
+            if (selectedEmotions.length >= 5) {
 
-            const button =
-                document.createElement("button");
+                alert("You can choose up to 5 emotions.");
 
-            button.type = "button";
+                return;
+            }
 
-            button.className = "emotion-btn";
+            selectedEmotions.push(emotion);
 
-            button.dataset.group = group.id;
+            this.classList.add("selected");
+        }
 
-            button.textContent = emotion;
-
-            button.onclick = function() {
-                toggleEmotion(
-                    emotion,
-                    group.id,
-                    button
-                );
-            };
-
-            buttons.appendChild(button);
-
-        });
-
-        container.appendChild(groupDiv);
+        document.getElementById("count").textContent =
+            selectedEmotions.length +
+            " / 5 emotions selected";
 
     });
-}
+
+});
 
 
-/* -----------------------------
-   SELECT EMOTION
------------------------------ */
+/* SAVE ENTRY */
 
-function toggleEmotion(emotion, group, button) {
+document.getElementById("saveButton")
+.addEventListener("click", function() {
 
-    const index = selectedEmotions.findIndex(
-        e => e.name === emotion
+    const text =
+        document.getElementById("diaryText")
+        .value
+        .trim();
+
+    if (text === "") {
+
+        alert("Please write something first.");
+
+        return;
+    }
+
+    if (selectedEmotions.length === 0) {
+
+        alert("Please choose at least one emotion.");
+
+        return;
+    }
+
+    const entry = {
+
+        number: entries.length + 1,
+
+        date: new Date().toLocaleString(),
+
+        text: text,
+
+        emotions: [...selectedEmotions]
+
+    };
+
+    entries.push(entry);
+
+    localStorage.setItem(
+        "emotiaryEntries",
+        JSON.stringify(entries)
     );
 
-    // If already selected, remove it
-    if (index !== -1) {
+    document.getElementById("diaryText").value = "";
 
-        selectedEmotions.splice(index, 1);
+    selectedEmotions = [];
+
+    document.querySelectorAll(".emotion")
+    .forEach(button => {
 
         button.classList.remove("selected");
 
-    } else {
+    });
 
-        // Maximum of 5 emotions
-        if (selectedEmotions.length >= 5) {
+    document.getElementById("count").textContent =
+        "0 / 5 emotions selected";
 
-            alert("You can choose a maximum of 5 emotions.");
+    displayEntries();
 
-            return;
-        }
+    alert("Entry saved! 💜");
 
-        selectedEmotions.push({
-            name: emotion,
-            group: group
-        });
+});
 
-        button.classList.add("selected");
+
+/* DISPLAY ENTRIES */
+
+function displayEntries() {
+
+    const container =
+        document.getElementById("entries");
+
+    container.innerHTML = "";
+
+    if (entries.length === 0) {
+
+        container.innerHTML =
+            "<p>No entries yet.</p>";
+
+        return;
     }
 
-    updateSelectedCount();
+    [...entries].reverse().forEach((entry, index) => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "entry";
+
+        div.innerHTML = `
+
+            <strong>
+                Entry #${entry.number}
+            </strong>
+
+            <p>
+                ${entry.date}
+            </p>
+
+            <p>
+                ${escapeHTML(entry.text)}
+            </p>
+
+            <div>
+                ${entry.emotions.map(emotion =>
+                    `<span class="tag">
+                        ${escapeHTML(emotion)}
+                    </span>`
+                ).join("")}
+            </div>
+
+            <button
+                class="delete"
+                onclick="deleteEntry(${entry.number})">
+                Delete
+            </button>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
 }
 
-    const index =
-        selectedEmotions.findIndex(
-            e => e.name === emotion
+
+/* DELETE */
+
+function deleteEntry(number) {
+
+    entries =
+        entries.filter(
+            entry => entry.number !== number
         );
 
-    if (index !== -1) {
+    localStorage.setItem(
+        "emotiaryEntries",
+        JSON.stringify(entries)
+    );
 
-        selectedEmotions.splice(index, 1);
+    displayEntries();
 
-        button.classList
+}
+
+
+/* SAFETY */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
+
+
+/* LOAD */
+
+displayEntries();
+
+</script>
+
+</body>
+</html>
