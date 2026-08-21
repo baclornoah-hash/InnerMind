@@ -119,6 +119,25 @@ textarea:focus {
     background: #634b86;
 }
 
+    /* RESTORE */
+
+    .restore-button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #e8dfef;
+    color: #70548f;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.restore-button:hover {
+    background: #ddd1e8;
+}
+    
 .message {
     margin-top: 12px;
     text-align: center;
@@ -337,6 +356,45 @@ Save Entry
 
 </div>
 
+<!-- =========================
+     BACKUP & RESTORE
+========================= -->
+
+<div class="card">
+
+<h2>💾 Backup & Restore</h2>
+
+<p>
+Keep a copy of your Emotiary entries or move them to another device.
+</p>
+
+<button
+    type="button"
+    class="restore-button"
+    id="backupButton">
+    📥 Download Backup
+</button>
+
+<input
+    type="file"
+    id="restoreFile"
+    accept=".json"
+    style="display:none;"
+>
+
+<button
+    type="button"
+    class="save-button"
+    id="restoreButton">
+    📤 Restore Backup
+</button>
+
+<div
+    class="message"
+    id="backupMessage">
+</div>
+
+</div>
 
 <script>
 
@@ -364,16 +422,7 @@ const categories = [
         "Hostile",
         "Resentful",
         "Bitter",
-        "Provoked",
-        "Defensive",
-        "Impatient",
-        "Restless",
-        "Suspicious",
-        "Wary",
-        "Alarmed",
-        "Uneasy",
-        "Overwhelmed",
-        "Exasperated",
+xasperated",
         "Annoyed",
         "Irrational",
         "Vengeful",
@@ -1844,6 +1893,284 @@ function deleteEntry(id) {
 
 }
 
+    /* =====================================
+   BACKUP & RESTORE
+===================================== */
+
+const backupButton =
+    document.getElementById(
+        "backupButton"
+    );
+
+const restoreButton =
+    document.getElementById(
+        "restoreButton"
+    );
+
+const restoreFile =
+    document.getElementById(
+        "restoreFile"
+    );
+
+const backupMessage =
+    document.getElementById(
+        "backupMessage"
+    );
+
+
+/* =====================================
+   BACKUP MESSAGE
+===================================== */
+
+function showBackupMessage(text) {
+
+    backupMessage.textContent =
+        text;
+
+    setTimeout(
+        function() {
+
+            backupMessage.textContent =
+                "";
+
+        },
+        3000
+    );
+
+}
+
+
+/* =====================================
+   DOWNLOAD BACKUP
+===================================== */
+
+backupButton.addEventListener(
+    "click",
+    function() {
+
+        if (entries.length === 0) {
+
+            showBackupMessage(
+                "There are no diary entries to back up."
+            );
+
+            return;
+
+        }
+
+
+        const backupData = {
+
+            app:
+                "Emotiary",
+
+            version:
+                1,
+
+            exportedAt:
+                new Date().toISOString(),
+
+            entries:
+                entries
+
+        };
+
+
+        const json =
+            JSON.stringify(
+                backupData,
+                null,
+                2
+            );
+
+
+        const blob =
+            new Blob(
+                [json],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        const date =
+            new Date()
+                .toISOString()
+                .slice(
+                    0,
+                    10
+                );
+
+
+        link.href =
+            url;
+
+
+        link.download =
+            "emotiary-backup-" +
+            date +
+            ".json";
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        document.body.removeChild(
+            link
+        );
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        showBackupMessage(
+            "Backup downloaded successfully! 💜"
+        );
+
+    }
+);
+
+
+/* =====================================
+   OPEN RESTORE FILE
+===================================== */
+
+restoreButton.addEventListener(
+    "click",
+    function() {
+
+        restoreFile.click();
+
+    }
+);
+
+
+/* =====================================
+   RESTORE BACKUP
+===================================== */
+
+restoreFile.addEventListener(
+    "change",
+    function(event) {
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file) {
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e) {
+
+                try {
+
+                    const backupData =
+                        JSON.parse(
+                            e.target.result
+                        );
+
+
+                    if (
+                        !backupData ||
+                        backupData.app !== "Emotiary" ||
+                        !Array.isArray(
+                            backupData.entries
+                        )
+                    ) {
+
+                        throw new Error(
+                            "Invalid backup file."
+                        );
+
+                    }
+
+
+                    const confirmed =
+                        confirm(
+                            "Restoring this backup will replace your current diary entries. Continue?"
+                        );
+
+
+                    if (!confirmed) {
+
+                        restoreFile.value =
+                            "";
+
+                        return;
+
+                    }
+
+
+                    entries =
+                        backupData.entries;
+
+
+                    localStorage.setItem(
+                        "emotiaryEntries",
+                        JSON.stringify(
+                            entries
+                        )
+                    );
+
+
+                    displayEntries();
+
+                    updateAnalysis();
+
+
+                    showBackupMessage(
+                        "Backup restored successfully! 💜"
+                    );
+
+
+                } catch (error) {
+
+                    showBackupMessage(
+                        "Invalid Emotiary backup file."
+                    );
+
+                }
+
+
+                restoreFile.value =
+                    "";
+
+            };
+
+
+        reader.readAsText(
+            file
+        );
+
+    }
+);
 
 /* =====================================
    SECURITY
