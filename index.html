@@ -251,6 +251,12 @@ canvas {
     font-size: 14px;
 }
 
+    .analysis-range {
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+    
 @media (max-width: 600px) {
 
     .category-list {
@@ -326,6 +332,368 @@ Save Entry
 
 </div>
 
+    <!-- =========================
+     DAILY MOST PROMINENT EMOTIONS
+========================= -->
+
+<div class="card">
+
+<h2>🌤️ Daily Emotional Highlights</h2>
+
+<div id="dailyEmotionContent">
+
+    <div class="empty">
+        No daily emotion available yet.
+    </div>
+
+</div>
+
+</div>
+
+    /* =====================================
+   DAILY MOST PROMINENT EMOTIONS
+===================================== */
+
+function getEntryDateKey(entry) {
+
+    const date = new Date(entry.id);
+
+    return date.toLocaleDateString("en-CA");
+
+}
+
+
+/* =====================================
+   GET DAILY EMOTION COUNTS
+===================================== */
+
+function getDailyEmotionCounts(dateKey) {
+
+    const counts = {};
+
+    entries.forEach(function(entry) {
+
+        if (getEntryDateKey(entry) !== dateKey) {
+            return;
+        }
+
+        counts[entry.emotion] =
+            (counts[entry.emotion] || 0) + 1;
+
+    });
+
+    return counts;
+
+}
+
+
+/* =====================================
+   GET MOST PROMINENT EMOTION
+===================================== */
+
+function getMostProminentEmotion(dateKey, tieBreakerDateKeys = []) {
+
+    const counts =
+        getDailyEmotionCounts(dateKey);
+
+    const emotions =
+        Object.keys(counts);
+
+    if (emotions.length === 0) {
+        return null;
+    }
+
+
+    let highest =
+        Math.max(
+            ...emotions.map(
+                function(emotion) {
+                    return counts[emotion];
+                }
+            )
+        );
+
+
+    let tied =
+        emotions.filter(
+            function(emotion) {
+                return counts[emotion] === highest;
+            }
+        );
+
+
+    /* No tie */
+
+    if (tied.length === 1) {
+
+        return {
+            emotion: tied[0],
+            count: counts[tied[0]]
+        };
+
+    }
+
+
+    /* =================================
+       TIE BREAKER
+
+       Look at previous days.
+
+       The emotion that appeared closest
+       to the current day wins.
+    ================================= */
+
+    for (
+        let i = 0;
+        i < tieBreakerDateKeys.length;
+        i++
+    ) {
+
+        const previousCounts =
+            getDailyEmotionCounts(
+                tieBreakerDateKeys[i]
+            );
+
+
+        let previousBest =
+            -1;
+
+        let previousWinner =
+            null;
+
+
+        tied.forEach(
+            function(emotion) {
+
+                const count =
+                    previousCounts[emotion] || 0;
+
+
+                if (count > previousBest) {
+
+                    previousBest =
+                        count;
+
+                    previousWinner =
+                        emotion;
+
+                }
+
+            }
+        );
+
+
+        if (
+            previousWinner !== null &&
+            previousBest > 0
+        ) {
+
+            return {
+                emotion: previousWinner,
+                count: counts[previousWinner]
+            };
+
+        }
+
+    }
+
+
+    /* Final deterministic fallback */
+
+    return {
+        emotion:
+            tied.sort()[0],
+
+        count:
+            counts[
+                tied.sort()[0]
+            ]
+
+    };
+
+}
+
+
+/* =====================================
+   DAILY EMOTIONAL HIGHLIGHTS
+===================================== */
+
+function updateDailyEmotions() {
+
+    const container =
+        document.getElementById(
+            "dailyEmotionContent"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    const today =
+        new Date();
+
+
+    const todayKey =
+        today.toLocaleDateString(
+            "en-CA"
+        );
+
+
+    const yesterday =
+        new Date(today);
+
+
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+
+    const yesterdayKey =
+        yesterday.toLocaleDateString(
+            "en-CA"
+        );
+
+
+    /* Previous days for tie breaking */
+
+    const previousDays = [];
+
+
+    for (
+        let i = 2;
+        i <= 30;
+        i++
+    ) {
+
+        const previous =
+            new Date(today);
+
+
+        previous.setDate(
+            previous.getDate() - i
+        );
+
+
+        previousDays.push(
+            previous.toLocaleDateString(
+                "en-CA"
+            )
+        );
+
+    }
+
+
+    const todayResult =
+        getMostProminentEmotion(
+            todayKey,
+            previousDays
+        );
+
+
+    const yesterdayResult =
+        getMostProminentEmotion(
+            yesterdayKey,
+            previousDays
+        );
+
+
+    container.innerHTML = "";
+
+
+    /* TODAY */
+
+    const todayBox =
+        document.createElement(
+            "div"
+        );
+
+    todayBox.className =
+        "daily-emotion-box";
+
+
+    todayBox.innerHTML =
+
+        "<h3>☀️ Today's Most Prominent Emotion</h3>" +
+
+        (
+            todayResult
+
+            ?
+
+            "<div class='daily-emotion-name'>" +
+            escapeHTML(
+                todayResult.emotion
+            ) +
+            "</div>" +
+
+            "<p>" +
+            todayResult.count +
+            (
+                todayResult.count === 1
+                ? " entry"
+                : " entries"
+            ) +
+            "</p>"
+
+            :
+
+            "<p class='empty'>No entries today yet.</p>"
+        );
+
+
+    container.appendChild(
+        todayBox
+    );
+
+
+    /* YESTERDAY */
+
+    const yesterdayBox =
+        document.createElement(
+            "div"
+        );
+
+    yesterdayBox.className =
+        "daily-emotion-box";
+
+
+    yesterdayBox.innerHTML =
+
+        "<h3>🌙 Yesterday's Most Prominent Emotion</h3>" +
+
+        (
+            yesterdayResult
+
+            ?
+
+            "<div class='daily-emotion-name'>" +
+            escapeHTML(
+                yesterdayResult.emotion
+            ) +
+            "</div>" +
+
+            "<p>" +
+            yesterdayResult.count +
+            (
+                yesterdayResult.count === 1
+                ? " entry"
+                : " entries"
+            ) +
+            "</p>"
+
+            :
+
+            "<p class='empty'>No entries yesterday.</p>"
+        );
+
+
+    container.appendChild(
+        yesterdayBox
+    );
+
+}
 
 <!-- =========================
      100 ENTRY ANALYSIS
@@ -2199,6 +2567,8 @@ createCategories();
 displayEntries();
 
 updateAnalysis();
+
+updateDailyEmotions();
 
 </script>
 
