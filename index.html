@@ -631,70 +631,160 @@ function updateDailyEmotions() {
             "<p>" +
             todayResult.count +
             (
-                todayResult.count === 1
-                ? " entry"
-                : " entries"
-            ) +
-            "</p>"
+function updateDailyEmotions() {
 
-            :
+    const container =
+        document.getElementById("dailyEmotionContent");
 
-            "<p class='empty'>No entries today yet.</p>"
+    if (!container) {
+        return;
+    }
+
+    const today = new Date();
+
+    const todayKey =
+        today.toLocaleDateString("en-CA");
+
+    const yesterday = new Date(today);
+
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+    const yesterdayKey =
+        yesterday.toLocaleDateString("en-CA");
+
+
+    /* =================================
+       PREVIOUS DAYS FOR TIE BREAKING
+    ================================= */
+
+    const previousDays = [];
+
+    for (let i = 2; i <= 30; i++) {
+
+        const previous =
+            new Date(today);
+
+        previous.setDate(
+            previous.getDate() - i
         );
 
+        previousDays.push(
+            previous.toLocaleDateString("en-CA")
+        );
+
+    }
+
+
+    /* =================================
+       CALCULATE RESULTS
+    ================================= */
+
+    const todayResult =
+        getMostProminentEmotion(
+            todayKey,
+            previousDays
+        );
+
+    const yesterdayResult =
+        getMostProminentEmotion(
+            yesterdayKey,
+            previousDays
+        );
+
+
+    container.innerHTML = "";
+
+
+    /* =================================
+       TODAY
+    ================================= */
+
+    const todayBox =
+        document.createElement("div");
+
+    todayBox.className =
+        "daily-emotion-box";
+
+    todayBox.innerHTML = `
+
+        <h3>☀️ Today's Most Prominent Emotion</h3>
+
+        ${
+            todayResult
+            ?
+            `
+                <div class="daily-emotion-name">
+                    ${escapeHTML(todayResult.emotion)}
+                </div>
+
+                <div class="daily-emotion-count">
+                    ${todayResult.count}
+                    ${
+                        todayResult.count === 1
+                        ? "entry"
+                        : "entries"
+                    }
+                </div>
+            `
+            :
+            `
+                <p>No entries today yet.</p>
+            `
+        }
+
+    `;
 
     container.appendChild(
         todayBox
     );
 
 
-    /* YESTERDAY */
+    /* =================================
+       YESTERDAY
+    ================================= */
 
     const yesterdayBox =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     yesterdayBox.className =
         "daily-emotion-box";
 
+    yesterdayBox.innerHTML = `
 
-    yesterdayBox.innerHTML =
+        <h3>🌙 Yesterday's Most Prominent Emotion</h3>
 
-        "<h3>🌙 Yesterday's Most Prominent Emotion</h3>" +
-
-        (
+        ${
             yesterdayResult
-
             ?
+            `
+                <div class="daily-emotion-name">
+                    ${escapeHTML(yesterdayResult.emotion)}
+                </div>
 
-            "<div class='daily-emotion-name'>" +
-            escapeHTML(
-                yesterdayResult.emotion
-            ) +
-            "</div>" +
-
-            "<p>" +
-            yesterdayResult.count +
-            (
-                yesterdayResult.count === 1
-                ? " entry"
-                : " entries"
-            ) +
-            "</p>"
-
+                <div class="daily-emotion-count">
+                    ${yesterdayResult.count}
+                    ${
+                        yesterdayResult.count === 1
+                        ? "entry"
+                        : "entries"
+                    }
+                </div>
+            `
             :
+            `
+                <p>No entries yesterday.</p>
+            `
+        }
 
-            "<p class='empty'>No entries yesterday.</p>"
-        );
-
+    `;
 
     container.appendChild(
         yesterdayBox
     );
 
 }
-
 <!-- =========================
      100 ENTRY ANALYSIS
 ========================= -->
