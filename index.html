@@ -1,22 +1,327 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Emotiary Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emotiary</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f0eb;
+    color: #302b27;
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
+
+textarea {
+    width: 100%;
+    height: 180px;
+    box-sizing: border-box;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.emotions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.emotion {
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 20px;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.emotion.selected {
+    background: #8064a8;
+    color: white;
+}
+
+#saveButton {
+    width: 100%;
+    padding: 15px;
+    background: #8064a8;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.entry {
+    background: white;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 12px;
+}
+
+.tag {
+    display: inline-block;
+    background: #8064a8;
+    color: white;
+    padding: 5px 9px;
+    border-radius: 15px;
+    margin: 3px;
+    font-size: 12px;
+}
+</style>
 </head>
 
 <body>
 
-<h1>Emotiary Test</h1>
+<h1>🌙 Emotiary</h1>
 
-<button id="testButton">TEST BUTTON</button>
+<p>What's on your mind?</p>
 
-<p id="result">Waiting...</p>
+<textarea id="diaryText"></textarea>
+
+<p id="emotionCount">0 / 5 emotions selected</p>
+
+<div class="emotions">
+
+<button type="button" class="emotion" data-emotion="Angry">
+🔴 Angry
+</button>
+
+<button type="button" class="emotion" data-emotion="Irritated">
+🔴 Irritated
+</button>
+
+<button type="button" class="emotion" data-emotion="Sad">
+🔵 Sad
+</button>
+
+<button type="button" class="emotion" data-emotion="Hopeless">
+🔵 Hopeless
+</button>
+
+<button type="button" class="emotion" data-emotion="Serious">
+⚫ Serious
+</button>
+
+<button type="button" class="emotion" data-emotion="Confident">
+🟣 Confident
+</button>
+
+<button type="button" class="emotion" data-emotion="Awesome">
+🟣 Awesome
+</button>
+
+<button type="button" class="emotion" data-emotion="Happy">
+🟡 Happy
+</button>
+
+<button type="button" class="emotion" data-emotion="Overjoyed">
+🟡 Overjoyed
+</button>
+
+<button type="button" class="emotion" data-emotion="Anxious">
+🩵 Anxious
+</button>
+
+<button type="button" class="emotion" data-emotion="Calm">
+🌿 Calm
+</button>
+
+<button type="button" class="emotion" data-emotion="Relaxed">
+🌿 Relaxed
+</button>
+
+<button type="button" class="emotion" data-emotion="Passionate">
+🟠 Passionate
+</button>
+
+<button type="button" class="emotion" data-emotion="Eager">
+🟠 Eager
+</button>
+
+</div>
+
+<button id="saveButton">
+Save Entry
+</button>
+
+<h2>My Entries</h2>
+
+<div id="entries"></div>
 
 <script>
-document.getElementById("testButton").onclick = function() {
-    document.getElementById("result").textContent =
-        "JavaScript is working! 🎉";
-};
+
+let selectedEmotions = [];
+
+let entries = JSON.parse(
+    localStorage.getItem("emotiaryEntries") || "[]"
+);
+
+
+/* EMOTIONS */
+
+const emotionButtons =
+    document.querySelectorAll(".emotion");
+
+emotionButtons.forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+        const emotion =
+            button.dataset.emotion;
+
+        if (selectedEmotions.includes(emotion)) {
+
+            selectedEmotions =
+                selectedEmotions.filter(
+                    e => e !== emotion
+                );
+
+            button.classList.remove("selected");
+
+        } else {
+
+            if (selectedEmotions.length >= 5) {
+
+                alert("Maximum of 5 emotions.");
+
+                return;
+            }
+
+            selectedEmotions.push(emotion);
+
+            button.classList.add("selected");
+        }
+
+        document.getElementById(
+            "emotionCount"
+        ).textContent =
+            selectedEmotions.length +
+            " / 5 emotions selected";
+
+    });
+
+});
+
+
+/* SAVE */
+
+document.getElementById(
+    "saveButton"
+).addEventListener("click", function() {
+
+    const text =
+        document.getElementById(
+            "diaryText"
+        ).value.trim();
+
+    if (text === "") {
+
+        alert("Write something first.");
+
+        return;
+    }
+
+    if (selectedEmotions.length === 0) {
+
+        alert("Choose at least one emotion.");
+
+        return;
+    }
+
+    const entry = {
+
+        number: entries.length + 1,
+
+        date: new Date().toLocaleString(),
+
+        text: text,
+
+        emotions: [...selectedEmotions]
+
+    };
+
+    entries.push(entry);
+
+    localStorage.setItem(
+        "emotiaryEntries",
+        JSON.stringify(entries)
+    );
+
+    document.getElementById(
+        "diaryText"
+    ).value = "";
+
+    selectedEmotions = [];
+
+    emotionButtons.forEach(function(button) {
+        button.classList.remove("selected");
+    });
+
+    document.getElementById(
+        "emotionCount"
+    ).textContent =
+        "0 / 5 emotions selected";
+
+    displayEntries();
+
+    alert("Entry saved! 💜");
+
+});
+
+
+/* DISPLAY */
+
+function displayEntries() {
+
+    const container =
+        document.getElementById("entries");
+
+    container.innerHTML = "";
+
+    entries.forEach(function(entry) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "entry";
+
+        div.innerHTML =
+            "<strong>Entry #" +
+            entry.number +
+            "</strong>" +
+
+            "<p>" +
+            entry.date +
+            "</p>" +
+
+            "<p>" +
+            entry.text +
+            "</p>" +
+
+            "<div>" +
+            entry.emotions.map(function(emotion) {
+                return '<span class="tag">' +
+                    emotion +
+                    '</span>';
+            }).join("") +
+            "</div>";
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* LOAD OLD ENTRIES */
+
+displayEntries();
+
 </script>
 
 </body>
