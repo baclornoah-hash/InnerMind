@@ -72,6 +72,60 @@ textarea {
     margin: 3px;
     font-size: 12px;
 }
+    .category-selector {
+    margin: 20px 0;
+}
+
+#categories {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.category {
+    padding: 14px 8px;
+    border: 3px solid;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.category.selected-category {
+    background: #302b27;
+    color: white;
+}
+
+.specific-emotions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.specific-emotion {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.specific-emotion.selected-emotion {
+    background: #8064a8;
+    color: white;
+}
+
+@media (max-width: 600px) {
+
+    #categories {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .specific-emotions {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
 </style>
 </head>
 
@@ -85,65 +139,15 @@ textarea {
 
 <p id="emotionCount">0 / 5 emotions selected</p>
 
-<div class="emotions">
+<div class="category-selector">
 
-<button type="button" class="emotion" data-emotion="Angry">
-🔴 Angry
-</button>
+    <h3>Choose your main emotion</h3>
 
-<button type="button" class="emotion" data-emotion="Irritated">
-🔴 Irritated
-</button>
-
-<button type="button" class="emotion" data-emotion="Sad">
-🔵 Sad
-</button>
-
-<button type="button" class="emotion" data-emotion="Hopeless">
-🔵 Hopeless
-</button>
-
-<button type="button" class="emotion" data-emotion="Serious">
-⚫ Serious
-</button>
-
-<button type="button" class="emotion" data-emotion="Confident">
-🟣 Confident
-</button>
-
-<button type="button" class="emotion" data-emotion="Awesome">
-🟣 Awesome
-</button>
-
-<button type="button" class="emotion" data-emotion="Happy">
-🟡 Happy
-</button>
-
-<button type="button" class="emotion" data-emotion="Overjoyed">
-🟡 Overjoyed
-</button>
-
-<button type="button" class="emotion" data-emotion="Anxious">
-🩵 Anxious
-</button>
-
-<button type="button" class="emotion" data-emotion="Calm">
-🌿 Calm
-</button>
-
-<button type="button" class="emotion" data-emotion="Relaxed">
-🌿 Relaxed
-</button>
-
-<button type="button" class="emotion" data-emotion="Passionate">
-🟠 Passionate
-</button>
-
-<button type="button" class="emotion" data-emotion="Eager">
-🟠 Eager
-</button>
+    <div id="categories"></div>
 
 </div>
+
+<div id="specificEmotionArea"></div>
 
 <button id="saveButton">
 Save Entry
@@ -162,12 +166,268 @@ let entries = JSON.parse(
 );
 
 
-/* EMOTIONS */
+/* =========================
+   EMOTION CATEGORIES
+========================= */
 
-const emotionButtons =
-    document.querySelectorAll(".emotion");
+const categories = [
 
-emotionButtons.forEach(function(button) {
+    {
+        id: "red",
+        name: "Angry",
+        color: "#d9534f",
+        emotions: [
+            "Angry",
+            "Irritated",
+            "Frustrated",
+            "Furious",
+            "Agitated",
+            "Tense",
+            "Alert",
+            "Suspicious",
+            "Wary",
+            "Alarmed",
+            "Intense",
+            "Passionate",
+            "Impatient",
+            "Restless",
+            "Defensive",
+            "Provoked",
+            "Startled",
+            "Uneasy",
+            "Overwhelmed",
+            "Determined"
+        ]
+    },
+
+    {
+        id: "blue",
+        name: "Sad",
+        color: "#4d82b8",
+        emotions: [
+            "Sad",
+            "Hopeless",
+            "Melancholic",
+            "Pessimistic",
+            "Lonely",
+            "Nostalgic",
+            "Regretful",
+            "Guilty",
+            "Ashamed",
+            "Vulnerable",
+            "Discouraged",
+            "Miserable",
+            "Grieving",
+            "Reflective",
+            "Contemplative",
+            "Resigned",
+            "Yearning",
+            "Insecure",
+            "Empty",
+            "Despairing"
+        ]
+    },
+
+    {
+        id: "black",
+        name: "Serious",
+        color: "#333333",
+        emotions: [
+            "Serious",
+            "Calm",
+            "Composed",
+            "Neutral",
+            "Detached",
+            "Stoic",
+            "Focused",
+            "Curious",
+            "Skeptical",
+            "Doubtful",
+            "Confused",
+            "Perplexed",
+            "Concerned",
+            "Cautious",
+            "Rational",
+            "Objective",
+            "Patient",
+            "Controlled",
+            "Analytical",
+            "Uncertain"
+        ]
+    },
+
+    {
+        id: "white",
+        name: "Confident",
+        color: "#888888",
+        emotions: [
+            "Confident",
+            "Proud",
+            "Charismatic",
+            "Excited",
+            "Amused",
+            "Flattered",
+            "Admiring",
+            "Competitive",
+            "Ambitious",
+            "Triumphant",
+            "Superior",
+            "Elegant",
+            "Playful",
+            "Charming",
+            "Bold",
+            "Hopeful",
+            "Envious",
+            "Jealous",
+            "Embarrassed",
+            "Humiliated"
+        ]
+    },
+
+    {
+        id: "green",
+        name: "Happy",
+        color: "#4f9b68",
+        emotions: [
+            "Happy",
+            "Joyful",
+            "Overjoyed",
+            "Cheerful",
+            "Excited",
+            "Delighted",
+            "Amused",
+            "Affectionate",
+            "Loving",
+            "Grateful",
+            "Hopeful",
+            "Comforted",
+            "Relieved",
+            "Inspired",
+            "Tender",
+            "Compassionate",
+            "Empathetic",
+            "Sentimental",
+            "Energetic",
+            "Euphoric"
+        ]
+    }
+
+];
+
+let selectedCategory = null;
+let selectedEmotion = null;
+
+    /* =========================
+   DISPLAY CATEGORIES
+========================= */
+
+function displayCategories() {
+
+    const container =
+        document.getElementById("categories");
+
+    container.innerHTML = "";
+
+    categories.forEach(function(category) {
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+
+        button.className = "category";
+
+        button.textContent =
+            category.name;
+
+        button.style.borderColor =
+            category.color;
+
+        button.onclick = function() {
+
+            selectedCategory = category;
+
+            selectedEmotion = null;
+
+            document
+                .querySelectorAll(".category")
+                .forEach(function(btn) {
+                    btn.classList.remove("selected-category");
+                });
+
+            button.classList.add(
+                "selected-category"
+            );
+
+            displaySpecificEmotions(category);
+        };
+
+        container.appendChild(button);
+
+    });
+
+}
+
+    function displaySpecificEmotions(category) {
+
+    const area =
+        document.getElementById(
+            "specificEmotionArea"
+        );
+
+    area.innerHTML = `
+        <h3>
+            Choose a specific emotion
+        </h3>
+
+        <div class="specific-emotions"></div>
+    `;
+
+    const emotionContainer =
+        area.querySelector(
+            ".specific-emotions"
+        );
+
+    category.emotions.forEach(function(emotion) {
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+
+        button.className =
+            "specific-emotion";
+
+        button.textContent =
+            emotion;
+
+        button.onclick = function() {
+
+            selectedEmotion = emotion;
+
+            document
+                .querySelectorAll(
+                    ".specific-emotion"
+                )
+                .forEach(function(btn) {
+
+                    btn.classList.remove(
+                        "selected-emotion"
+                    );
+
+                });
+
+            button.classList.add(
+                "selected-emotion"
+            );
+
+        };
+
+        emotionContainer.appendChild(button);
+
+    });
+
+}
 
     button.addEventListener("click", function() {
 
@@ -226,24 +486,35 @@ document.getElementById(
         return;
     }
 
-    if (selectedEmotions.length === 0) {
+    if (!selectedCategory) {
 
-        alert("Choose at least one emotion.");
+    alert("Choose one main emotion category.");
 
-        return;
-    }
+    return;
+}
+
+if (!selectedEmotion) {
+
+    alert("Choose a specific emotion.");
+
+    return;
+}
 
     const entry = {
 
-        number: entries.length + 1,
+    number: entries.length + 1,
 
-        date: new Date().toLocaleString(),
+    date: new Date().toLocaleString(),
 
-        text: text,
+    text: text,
 
-        emotions: [...selectedEmotions]
+    category: selectedCategory.name,
 
-    };
+    categoryColor: selectedCategory.color,
+
+    emotion: selectedEmotion
+
+};
 
     entries.push(entry);
 
@@ -256,7 +527,18 @@ document.getElementById(
         "diaryText"
     ).value = "";
 
-    selectedEmotions = [];
+    selectedCategory = null;
+selectedEmotion = null;
+
+document.getElementById(
+    "categories"
+).innerHTML = "";
+
+document.getElementById(
+    "specificEmotionArea"
+).innerHTML = "";
+    
+displayCategories();
 
     emotionButtons.forEach(function(button) {
         button.classList.remove("selected");
@@ -267,7 +549,8 @@ document.getElementById(
     ).textContent =
         "0 / 5 emotions selected";
 
-    displayEntries();
+    displayCategories();
+displayEntries();
 
     alert("Entry saved! 💜");
 
@@ -303,8 +586,28 @@ function displayEntries() {
             entry.text +
             "</p>" +
 
-            "<div>" +
-            entry.emotions.map(function(emotion) {
+            "<div>" +div.innerHTML =
+    "<strong>Entry #" +
+    entry.number +
+    "</strong>" +
+
+    "<p>" +
+    entry.date +
+    "</p>" +
+
+    "<p>" +
+    entry.text +
+    "</p>" +
+
+    "<p>" +
+    "<strong>Category:</strong> " +
+    entry.category +
+    "</p>" +
+
+    "<p>" +
+    "<strong>Emotion:</strong> " +
+    entry.emotion +
+    "</p>";
                 return '<span class="tag">' +
                     emotion +
                     '</span>';
