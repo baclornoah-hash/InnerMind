@@ -238,13 +238,6 @@ textarea:focus {
     border-radius: 50%;
 }
 
-.emotion-dot::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-}
-
 .emotion-dot::after {
     content: "";
     position: absolute;
@@ -257,37 +250,51 @@ textarea:focus {
     pointer-events: none;
 }
 
+/* The orb's outer shell (.orb-core) is completely static — fixed size,
+   fixed position, fixed base gradient and glow. It clips (overflow:
+   hidden) its own ::before layer, which is where all the animation
+   lives, so the orb itself always reads as steady and clear while the
+   light/energy moving inside it is clipped neatly to the circle. */
+
+.orb-core {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.orb-core::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    border-radius: 50%;
+}
+
 /* RED — Angry: vivid, burning, turbulent, chaotic */
 
 .dot-red {
     background: radial-gradient(circle at 50% 45%, #fff3b0 0%, #ff8a1f 16%, #ef3b1f 42%, #a3170f 72%, #560a08 100%);
     box-shadow: 0 0 8px #ff5522, 0 0 18px #ff2200, inset 0 0 8px rgba(0,0,0,0.35);
-    animation: redPulse 1.4s ease-in-out infinite;
 }
 
 .dot-red::before {
     background: conic-gradient(from 0deg,
-        transparent 0deg, rgba(255,214,90,0.55) 40deg, transparent 90deg,
-        rgba(255,100,20,0.5) 150deg, transparent 210deg,
-        rgba(255,230,150,0.4) 270deg, transparent 330deg, transparent 360deg);
+        transparent 0deg, rgba(255,214,90,0.6) 40deg, transparent 90deg,
+        rgba(255,100,20,0.55) 150deg, transparent 210deg,
+        rgba(255,230,150,0.45) 270deg, transparent 330deg, transparent 360deg);
     mix-blend-mode: screen;
     animation: redChurn 0.9s linear infinite, redFlicker 0.35s steps(3) infinite;
 }
 
-@keyframes redPulse {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.2); }
-}
-
 @keyframes redChurn {
-    from { transform: rotate(0deg) scale(1.15); }
-    to { transform: rotate(360deg) scale(1.15); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 @keyframes redFlicker {
-    0%, 100% { opacity: 0.75; }
+    0%, 100% { opacity: 0.7; }
     33% { opacity: 1; }
-    66% { opacity: 0.5; }
+    66% { opacity: 0.45; }
 }
 
 /* BLUE — Sad: deep, dim, heavy, sinking ripples */
@@ -295,7 +302,6 @@ textarea:focus {
 .dot-blue {
     background: radial-gradient(circle at 42% 32%, #2f527e 0%, #1c3457 38%, #0f2140 70%, #060f22 100%);
     box-shadow: 0 0 4px #16294a, 0 0 8px #0d1a30, inset 0 0 8px rgba(0,0,0,0.5);
-    animation: bluePulse 5s ease-in-out infinite;
 }
 
 .dot-blue::before {
@@ -305,11 +311,6 @@ textarea:focus {
     background-size: 100% 220%;
     background-position: 0% -10%;
     animation: blueSink 6s ease-in-out infinite;
-}
-
-@keyframes bluePulse {
-    0%, 100% { filter: brightness(0.92); }
-    50% { filter: brightness(1.05); }
 }
 
 @keyframes blueSink {
@@ -323,7 +324,6 @@ textarea:focus {
 .dot-black {
     background: radial-gradient(circle at 35% 30%, #55585c 0%, #303234 45%, #161718 78%, #030303 100%);
     box-shadow: 0 0 3px rgba(0,0,0,0.7), 0 0 6px rgba(10,10,10,0.6), inset 0 0 8px rgba(0,0,0,0.6);
-    animation: blackDull 7s linear infinite;
 }
 
 .dot-black::before {
@@ -333,14 +333,9 @@ textarea:focus {
     animation: blackDrift 8s linear infinite;
 }
 
-@keyframes blackDull {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(0.82); }
-}
-
 @keyframes blackDrift {
-    from { background-position: 0 0; }
-    to { background-position: 0 40px; }
+    from { transform: translateY(0); }
+    to { transform: translateY(20%); }
 }
 
 /* WHITE — Confident: pure, crystalline, structured pillars */
@@ -348,25 +343,21 @@ textarea:focus {
 .dot-white {
     background: radial-gradient(circle at 50% 40%, #ffffff 0%, #f7efd9 32%, #e2d3a4 62%, #c2a86a 100%);
     box-shadow: 0 0 6px #fff6df, 0 0 14px #ecd9a8, inset 0 0 5px rgba(255,255,255,0.6);
-    animation: whiteBurst 4s ease-in-out infinite;
 }
 
 .dot-white::before {
-    background: repeating-linear-gradient(90deg,
-        rgba(255,255,255,0.55) 0px, rgba(255,255,255,0.55) 1.5px,
-        transparent 1.5px, transparent 6px);
-    opacity: 0.45;
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(255,255,255,0.55) 0px, rgba(255,255,255,0.55) 1.5px,
+            transparent 1.5px, transparent 6px),
+        radial-gradient(circle at 50% 50%, rgba(255,248,224,0.5) 0%, transparent 60%);
+    opacity: 0.4;
     animation: whitePillars 4s ease-in-out infinite;
 }
 
-@keyframes whiteBurst {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.22); }
-}
-
 @keyframes whitePillars {
-    0%, 100% { transform: scaleY(1); opacity: 0.35; }
-    50% { transform: scaleY(1.06); opacity: 0.6; }
+    0%, 100% { transform: scaleY(1); opacity: 0.3; }
+    50% { transform: scaleY(1.04); opacity: 0.65; }
 }
 
 /* GREEN — Happy: neon, expansive, sparkling, floating */
@@ -374,25 +365,28 @@ textarea:focus {
 .dot-green {
     background: radial-gradient(circle at 45% 35%, #d4ff9e 0%, #7fe95a 32%, #2fb84a 65%, #0d6b2a 100%);
     box-shadow: 0 0 8px #6dff55, 0 0 16px #33dd44, inset 0 0 5px rgba(0,0,0,0.25);
-    animation: greenFloat 2.4s cubic-bezier(.34,1.56,.64,1) infinite;
 }
 
 .dot-green::before {
     background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
         radial-gradient(circle at 70% 60%, rgba(255,255,255,0.75) 0 1.5px, transparent 2.5px),
-        radial-gradient(circle at 55% 20%, rgba(255,255,255,0.65) 0 1.5px, transparent 2.5px);
-    animation: greenSparkle 1.6s ease-in-out infinite;
-}
-
-@keyframes greenFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-8%) scale(1.05); }
+        radial-gradient(circle at 55% 20%, rgba(255,255,255,0.65) 0 1.5px, transparent 2.5px),
+        radial-gradient(ellipse at 50% 50%, rgba(180,255,120,0.4) 0%, transparent 65%);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 220%;
+    background-position: 0 0, 0 0, 0 0, 0% 40%;
+    animation: greenSparkle 1.6s ease-in-out infinite, greenDrift 3.2s ease-in-out infinite;
 }
 
 @keyframes greenSparkle {
-    0%, 100% { opacity: 0.4; }
+    0%, 100% { opacity: 0.45; }
     50% { opacity: 1; }
+}
+
+@keyframes greenDrift {
+    0% { background-position: 0 0, 0 0, 0 0, 0% 40%; }
+    50% { background-position: 0 0, 0 0, 0 0, 0% -20%; }
+    100% { background-position: 0 0, 0 0, 0 0, 0% 40%; }
 }
 
 /* PIE CHART */
@@ -1534,12 +1528,20 @@ function updateDailyEmotions() {
 
     shown.forEach(function(entry) {
 
-        const dot = document.createElement("span");
         const textureClass = categoryDotClass[entry.category] || "dot-white";
 
-        dot.className = "emotion-dot " + textureClass;
+        // Outer shell (.emotion-dot) stays static and sized by the grid —
+        // it never animates. The inner .orb-core is the actual colored,
+        // clipped circle; its own ::before layer is where the light and
+        // energy move, clipped to a perfectly steady, clear circle.
+        const dot = document.createElement("span");
+        dot.className = "emotion-dot";
         dot.setAttribute("aria-label", entry.emotion);
 
+        const core = document.createElement("span");
+        core.className = "orb-core " + textureClass;
+
+        dot.appendChild(core);
         grid.appendChild(dot);
 
     });
