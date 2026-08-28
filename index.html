@@ -173,6 +173,23 @@ textarea:focus {
     color: white;
 }
 
+/* HIGHLIGHT GLOWING DOTS */
+
+.dot-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.emotion-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: default;
+}
+
 /* PIE CHART */
 
 .chart-area {
@@ -1272,17 +1289,16 @@ function groupEntries(range) {
         if (!groups[key]) {
             groups[key] = {
                 label: label,
-                categoryCounts: {},
-                emotionCounts: {},
-                total: 0
+                items: []
             };
         }
 
-        const group = groups[key];
-
-        group.total++;
-        group.categoryCounts[entry.category] = (group.categoryCounts[entry.category] || 0) + 1;
-        group.emotionCounts[entry.emotion] = (group.emotionCounts[entry.emotion] || 0) + 1;
+        // One dot per entry, carrying just its color and the emotion
+        // to show on hover — no text labels rendered by default.
+        groups[key].items.push({
+            color: entry.color,
+            emotion: entry.emotion
+        });
 
     });
 
@@ -1309,31 +1325,32 @@ function updateDailyEmotions() {
     shown.forEach(function(key) {
 
         const group = groups[key];
-        const topCategory = topOf(group.categoryCounts);
-        const topEmotion = topOf(group.emotionCounts);
-
-        const categoryObj = categories.find(function(c) {
-            return c.name === topCategory.name;
-        });
-
-        const color = categoryObj ? categoryObj.color : "#8064a8";
-
-        let emotionLabel = topCategory.name;
-
-        if (topEmotion.name && topEmotion.name !== topCategory.name) {
-            emotionLabel += " · " + topEmotion.name;
-        }
 
         const div = document.createElement("div");
         div.className = "entry";
 
-        div.innerHTML =
-            '<div class="entry-number">' + escapeHTML(group.label) + '</div>' +
-            '<div class="entry-date">' + group.total + (group.total === 1 ? " entry" : " entries") + '</div>' +
-            '<span class="entry-emotion" style="background:' + color + '">' +
-            escapeHTML(emotionLabel) +
-            '</span>';
+        const header = document.createElement("div");
+        header.className = "entry-number";
+        header.textContent = group.label;
 
+        div.appendChild(header);
+
+        const dotRow = document.createElement("div");
+        dotRow.className = "dot-row";
+
+        group.items.forEach(function(item) {
+
+            const dot = document.createElement("span");
+            dot.className = "emotion-dot";
+            dot.style.background = item.color;
+            dot.style.boxShadow = "0 0 6px " + item.color + ", 0 0 14px " + item.color;
+            dot.title = item.emotion;
+
+            dotRow.appendChild(dot);
+
+        });
+
+        div.appendChild(dotRow);
         container.appendChild(div);
 
     });
