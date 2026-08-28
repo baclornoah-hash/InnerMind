@@ -891,6 +891,9 @@ document.getElementById("saveButton").addEventListener("click", function() {
     }
 
     // Specific emotion is optional — default to the main emotion itself.
+    // Track this explicitly (rather than comparing text) since some
+    // categories list their own name as a selectable specific emotion.
+    const hasSpecificEmotion = selectedEmotion !== null;
     const emotionToSave = selectedEmotion || selectedCategory.name;
 
     const entry = {
@@ -900,7 +903,8 @@ document.getElementById("saveButton").addEventListener("click", function() {
         text: text,
         category: selectedCategory.name,
         color: selectedCategory.color,
-        emotion: emotionToSave
+        emotion: emotionToSave,
+        isDefaultEmotion: !hasSpecificEmotion
     };
 
     entries.push(entry);
@@ -1116,8 +1120,8 @@ function getAdvice(category, emotion, entryId) {
             <strong>🌱 Possible direction</strong>
             <p>${cycle.advice}</p>
             <p>
-                <strong>Consider:</strong>
-                ${cycle.target} → ${cycle.positive.join(", ")}
+                <strong>Qualities to lean into:</strong>
+                ${cycle.positive.join(", ")}
             </p>
         </div>
     `;
@@ -1143,11 +1147,18 @@ function displayEntries() {
         const div = document.createElement("div");
         div.className = "entry";
 
-        // If no specific emotion was chosen, entry.emotion equals
-        // entry.category — show it once instead of "Category · Category".
-        const emotionLabel = (entry.emotion === entry.category)
+        // Show just the main emotion if no specific one was chosen.
+        // Entries saved before this flag existed came from a version
+        // where picking a specific emotion was mandatory, so they always
+        // had one — never collapse those, even if the wording happens
+        // to match the category name (e.g. picking "Angry" under Angry).
+        const isDefault = (entry.isDefaultEmotion !== undefined)
+            ? entry.isDefaultEmotion
+            : false;
+
+        const emotionLabel = isDefault
             ? entry.category
-            : entry.category + " · " + entry.emotion;
+            : entry.emotion;
 
         div.innerHTML =
             '<div class="entry-number">Entry #' + entry.number + '</div>' +
