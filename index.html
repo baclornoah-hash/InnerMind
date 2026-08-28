@@ -1436,37 +1436,59 @@ function getWeekStart(date) {
 
 }
 
-function getEntriesForRange(range) {
-
-    const now = new Date();
+function getPeriodKey(date, range) {
 
     if (range === "daily") {
-
-        const todayKey = now.toLocaleDateString("en-CA");
-
-        return entries.filter(function(entry) {
-            return new Date(entry.id).toLocaleDateString("en-CA") === todayKey;
-        });
-
+        return date.toLocaleDateString("en-CA");
     }
 
     if (range === "weekly") {
-
-        const weekStart = getWeekStart(now);
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 7);
-
-        return entries.filter(function(entry) {
-            const d = new Date(entry.id);
-            return d >= weekStart && d < weekEnd;
-        });
-
+        return getWeekStart(date).toLocaleDateString("en-CA");
     }
 
     // monthly
-    return entries.filter(function(entry) {
-        const d = new Date(entry.id);
-        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+
+}
+
+function getDominantPerPeriod(range) {
+
+    // Group every entry into its day/week/month, then reduce each
+    // period down to whichever category was most common in it.
+    const groups = {};
+
+    entries.forEach(function(entry) {
+
+        const key = getPeriodKey(new Date(entry.id), range);
+
+        if (!groups[key]) {
+            groups[key] = {};
+        }
+
+        groups[key][entry.category] = (groups[key][entry.category] || 0) + 1;
+
+    });
+
+    // Period keys sort chronologically as plain strings (YYYY-MM-DD or
+    // YYYY-MM), so a lexicographic sort gives oldest → newest order.
+    const orderedKeys = Object.keys(groups).sort();
+    const recentKeys = orderedKeys.slice(-100);
+
+    return recentKeys.map(function(key) {
+
+        const counts = groups[key];
+        let bestCategory = null;
+        let bestCount = -1;
+
+        for (const category in counts) {
+            if (counts[category] > bestCount) {
+                bestCount = counts[category];
+                bestCategory = category;
+            }
+        }
+
+        return { key: key, category: bestCategory, count: bestCount };
+
     });
 
 }
@@ -1508,17 +1530,18 @@ function updateDailyEmotions() {
     const container = document.getElementById("dailyEmotionContent");
     container.innerHTML = "";
 
-    const rangeEntries = getEntriesForRange(highlightRange);
+    const periods = getDominantPerPeriod(highlightRange);
 
-    if (rangeEntries.length === 0) {
-        container.innerHTML = '<div class="empty">No entries for this period yet.</div>';
+    if (periods.length === 0) {
+        container.innerHTML = '<div class="empty">No entries yet.</div>';
         return;
     }
 
-    // Most recent 100 entries in the period, arranged in a 10-wide snake
-    // pattern (left→right, down, right→left, down, ...) as living,
-    // animated orbs — no text, no dates, just color and motion.
-    const shown = toSnakeOrder(rangeEntries.slice(-100));
+    // Up to the most recent 100 days/weeks/months (whichever is selected),
+    // each reduced to its single most dominant emotion, arranged in a
+    // 10-wide snake pattern as living, animated orbs — no text, no
+    // dates, just color and motion.
+    const shown = toSnakeOrder(periods);
 
     const wrap = document.createElement("div");
     wrap.className = "dot-grid-wrap";
@@ -1526,9 +1549,9 @@ function updateDailyEmotions() {
     const grid = document.createElement("div");
     grid.className = "dot-grid";
 
-    shown.forEach(function(entry) {
+    shown.forEach(function(period) {
 
-        const textureClass = categoryDotClass[entry.category] || "dot-white";
+        const textureClass = categoryDotClass[period.category] || "dot-white";
 
         // Outer shell (.emotion-dot) stays static and sized by the grid —
         // it never animates. The inner .orb-core is the actual colored,
@@ -1536,7 +1559,7 @@ function updateDailyEmotions() {
         // energy move, clipped to a perfectly steady, clear circle.
         const dot = document.createElement("span");
         dot.className = "emotion-dot";
-        dot.setAttribute("aria-label", entry.emotion);
+        dot.setAttribute("aria-label", period.category);
 
         const core = document.createElement("span");
         core.className = "orb-core " + textureClass;
