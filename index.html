@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Emotiary</title>
+<title>InnerMind</title>
 
 <style>
 
@@ -36,6 +35,12 @@ h1 {
     padding: 20px;
     margin-top: 20px;
     box-shadow: 0 5px 20px rgba(0,0,0,.06);
+}
+
+.hint {
+    color: #888;
+    font-size: 13px;
+    margin: -6px 0 10px;
 }
 
 textarea {
@@ -119,9 +124,9 @@ textarea:focus {
     background: #634b86;
 }
 
-    /* RESTORE */
+/* RESTORE */
 
-    .restore-button {
+.restore-button {
     width: 100%;
     margin-top: 10px;
     padding: 15px;
@@ -137,11 +142,35 @@ textarea:focus {
 .restore-button:hover {
     background: #ddd1e8;
 }
-    
+
 .message {
     margin-top: 12px;
     text-align: center;
     font-weight: bold;
+}
+
+/* HIGHLIGHT RANGE TOGGLE */
+
+.toggle-list {
+    display: flex;
+    gap: 8px;
+    margin: 5px 0 20px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 12px 5px;
+    border: 2px solid #8064a8;
+    background: white;
+    color: #8064a8;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.toggle-btn.active {
+    background: #8064a8;
+    color: white;
 }
 
 /* PIE CHART */
@@ -251,12 +280,6 @@ canvas {
     font-size: 14px;
 }
 
-    .analysis-range {
-    text-align: center;
-    color: #777;
-    font-size: 14px;
-}
-    
 @media (max-width: 600px) {
 
     .category-list {
@@ -277,7 +300,7 @@ canvas {
 
 <div class="container">
 
-<h1>🌙 Emotiary</h1>
+<h1>🌙 InnerMind</h1>
 
 <p>
 Write about your day, then choose the emotion that best describes
@@ -307,7 +330,11 @@ what you felt.
 </div>
 
 
-<h3>2. Choose a specific emotion</h3>
+<h3>2. Choose a specific emotion (optional)</h3>
+
+<p class="hint">
+If you skip this, we'll just record your main emotion.
+</p>
 
 <div
     class="emotion-list"
@@ -332,18 +359,24 @@ Save Entry
 
 </div>
 
-    <!-- =========================
-     DAILY MOST PROMINENT EMOTIONS
+<!-- =========================
+     EMOTIONAL HIGHLIGHTS (DAILY / WEEKLY / MONTHLY)
 ========================= -->
 
 <div class="card">
 
-<h2>🌤️ Daily Emotional Highlights</h2>
+<h2>🌤️ Emotional Highlights</h2>
+
+<div class="toggle-list" id="highlightToggle">
+    <button type="button" class="toggle-btn active" data-range="daily">Daily</button>
+    <button type="button" class="toggle-btn" data-range="weekly">Weekly</button>
+    <button type="button" class="toggle-btn" data-range="monthly">Monthly</button>
+</div>
 
 <div id="dailyEmotionContent">
 
     <div class="empty">
-        No daily emotion available yet.
+        No entries yet.
     </div>
 
 </div>
@@ -386,7 +419,7 @@ Save Entry
 <h2>💾 Backup & Restore</h2>
 
 <p>
-Keep a copy of your Emotiary entries or move them to another device.
+Keep a copy of your InnerMind entries or move them to another device.
 </p>
 
 <button
@@ -417,6 +450,8 @@ Keep a copy of your Emotiary entries or move them to another device.
 
 </div>
 
+</div>
+
 <script>
 
 /* =====================================
@@ -429,590 +464,287 @@ const categories = [
     id: "red",
     name: "Angry",
     color: "#d9534f",
-
     emotions: [
-
-        /* Difficult */
-
-        "Angry",
-        "Irritated",
-        "Frustrated",
-        "Furious",
-        "Agitated",
-        "Enraged",
-        "Hostile",
-        "Resentful",
-        "Bitter",
-        "Exasperated",
-        "Annoyed",
-        "Irrational",
-        "Vengeful",
-        "Outraged",
-        "Infuriated",
-        "Offended",
-        "Aggravated",
-        "Irate",
-
-        /* Constructive */
-
-        "Passionate",
-        "Determined",
-        "Driven",
-        "Assertive",
-        "Courageous",
-        "Bold",
-        "Energetic",
-        "Motivated",
-        "Fierce",
-        "Resolute",
-        "Persistent",
-        "Protective",
-        "Decisive",
-        "Empowered"
-
+        "Angry", "Irritated", "Frustrated", "Furious", "Agitated", "Enraged",
+        "Hostile", "Resentful", "Bitter", "Exasperated", "Annoyed", "Irrational",
+        "Vengeful", "Outraged", "Infuriated", "Offended", "Aggravated", "Irate",
+        "Passionate", "Determined", "Driven", "Assertive", "Courageous", "Bold",
+        "Energetic", "Motivated", "Fierce", "Resolute", "Persistent", "Protective",
+        "Decisive", "Empowered"
     ]
 },
-
 
 {
     id: "blue",
     name: "Sad",
     color: "#4d82b8",
-
     emotions: [
-
-        /* Difficult */
-
-        "Sad",
-        "Hopeless",
-        "Miserable",
-        "Despairing",
-        "Lonely",
-        "Empty",
-        "Melancholic",
-        "Pessimistic",
-        "Discouraged",
-        "Grieving",
-        "Guilty",
-        "Ashamed",
-        "Regretful",
-        "Insecure",
-        "Abandoned",
-        "Defeated",
-        "Helpless",
-        "Heartbroken",
-        "Pitiful",
-        "Sorrowful",
-        "Dejected",
-        "Depressed",
-        "Forlorn",
-        "Rejected",
-        "Disappointed",
-        "Wounded",
-
-        /* Constructive */
-
-        "Reflective",
-        "Contemplative",
-        "Thoughtful",
-        "Sensitive",
-        "Vulnerable",
-        "Understanding",
-        "Compassionate",
-        "Empathetic",
-        "Introspective",
-        "Appreciative",
-        "Humble",
-        "Forgiving",
-        "Patient",
-        "Self-aware",
-        "Honest",
-        "Mindful",
-        "Considerate"
-
+        "Sad", "Hopeless", "Miserable", "Despairing", "Lonely", "Empty",
+        "Melancholic", "Pessimistic", "Discouraged", "Grieving", "Guilty", "Ashamed",
+        "Regretful", "Insecure", "Abandoned", "Defeated", "Helpless", "Heartbroken",
+        "Pitiful", "Sorrowful", "Dejected", "Depressed", "Forlorn", "Rejected",
+        "Disappointed", "Wounded",
+        "Reflective", "Contemplative", "Thoughtful", "Sensitive", "Vulnerable",
+        "Understanding", "Compassionate", "Empathetic", "Introspective", "Appreciative",
+        "Humble", "Forgiving", "Patient", "Self-aware", "Honest", "Mindful", "Considerate"
     ]
 },
-
 
 {
     id: "black",
     name: "Serious",
     color: "#333333",
-
     emotions: [
-
-        /* Difficult */
-
-        "Serious",
-        "Overthinking",
-        "Confused",
-        "Perplexed",
-        "Doubtful",
-        "Uncertain",
-        "Hesitant",
-        "Indecisive",
-        "Detached",
-        "Aloof",
-        "Cold",
-        "Withdrawn",
-        "Suspicious",
-        "Concerned",
-        "Worried",
-        "Anxious",
-        "Rigid",
-        "Obsessive",
-        "Paranoid",
-        "Cynical",
-        "Preoccupied",
-        "Distracted",
-        "Stressed",
-        "Tense",
-
-        /* Constructive */
-
-        "Calm",
-        "Composed",
-        "Focused",
-        "Rational",
-        "Analytical",
-        "Objective",
-        "Patient",
-        "Controlled",
-        "Disciplined",
-        "Observant",
-        "Curious",
-        "Thoughtful",
-        "Practical",
-        "Logical",
-        "Grounded",
-        "Stable",
-        "Attentive",
-        "Mindful",
-        "Deliberate",
-        "Wise",
-        "Reasonable",
-        "Cautious"
-
+        "Serious", "Overthinking", "Confused", "Perplexed", "Doubtful", "Uncertain",
+        "Hesitant", "Indecisive", "Detached", "Aloof", "Cold", "Withdrawn",
+        "Suspicious", "Concerned", "Worried", "Anxious", "Rigid", "Obsessive",
+        "Paranoid", "Cynical", "Preoccupied", "Distracted", "Stressed", "Tense",
+        "Calm", "Composed", "Focused", "Rational", "Analytical", "Objective",
+        "Patient", "Controlled", "Disciplined", "Observant", "Curious", "Thoughtful",
+        "Practical", "Logical", "Grounded", "Stable", "Attentive", "Mindful",
+        "Deliberate", "Wise", "Reasonable", "Cautious"
     ]
 },
-
 
 {
     id: "white",
     name: "Confident",
     color: "#777777",
-
     emotions: [
-
-        /* Difficult */
-
-        "Proud",
-        "Arrogant",
-        "Egotistical",
-        "Conceited",
-        "Superior",
-        "Narcissistic",
-        "Envious",
-        "Jealous",
-        "Competitive",
-        "Boastful",
-        "Vain",
-        "Self-important",
-        "Entitled",
-        "Condescending",
-        "Insecure",
-        "Smug",
-        "Domineering",
-        "Controlling",
+        "Proud", "Arrogant", "Egotistical", "Conceited", "Superior", "Narcissistic",
+        "Envious", "Jealous", "Competitive", "Boastful", "Vain", "Self-important",
+        "Entitled", "Condescending", "Insecure", "Smug", "Domineering", "Controlling",
         "Judgmental",
-
-        /* Constructive */
-
-        "Confident",
-        "Charismatic",
-        "Bold",
-        "Courageous",
-        "Ambitious",
-        "Determined",
-        "Elegant",
-        "Charming",
-        "Playful",
-        "Assertive",
-        "Successful",
-        "Triumphant",
-        "Empowered",
-        "Capable",
-        "Independent",
-        "Fearless",
-        "Inspiring",
-        "Hopeful",
-        "Optimistic",
-        "Self-assured",
-        "Resourceful",
-        "Competent",
-        "Brave"
-
+        "Confident", "Charismatic", "Bold", "Courageous", "Ambitious", "Determined",
+        "Elegant", "Charming", "Playful", "Assertive", "Successful", "Triumphant",
+        "Empowered", "Capable", "Independent", "Fearless", "Inspiring", "Hopeful",
+        "Optimistic", "Self-assured", "Resourceful", "Competent", "Brave"
     ]
 },
-
 
 {
     id: "green",
     name: "Happy",
     color: "#4f9b68",
-
     emotions: [
-
-        /* Difficult / Excessive */
-
-        "Euphoric",
-        "Frenzied",
-        "Hyperactive",
-        "Reckless",
-        "Wild",
-        "Excessive",
-        "Impulsive",
-        "Careless",
-        "Overstimulated",
-        "Manic",
-        "Restless",
-        "Distracted",
-        "Uncontrolled",
-        "Overexcited",
-        "Hyped",
-
-        /* Positive */
-
-        "Happy",
-        "Joyful",
-        "Overjoyed",
-        "Cheerful",
-        "Delighted",
-        "Excited",
-        "Amused",
-        "Affectionate",
-        "Loving",
-        "Grateful",
-        "Hopeful",
-        "Comforted",
-        "Relieved",
-        "Inspired",
-        "Tender",
-        "Compassionate",
-        "Empathetic",
-        "Sentimental",
-        "Energetic",
-        "Playful",
-        "Peaceful",
-        "Content",
-        "Satisfied",
-        "Optimistic",
-        "Enthusiastic",
-        "Blissful",
-        "Radiant",
-        "Uplifted",
-        "Merry",
-        "Cheerful"
-
+        "Euphoric", "Frenzied", "Hyperactive", "Reckless", "Wild", "Excessive",
+        "Impulsive", "Careless", "Overstimulated", "Manic", "Restless", "Distracted",
+        "Uncontrolled", "Overexcited", "Hyped",
+        "Happy", "Joyful", "Overjoyed", "Cheerful", "Delighted", "Excited",
+        "Amused", "Affectionate", "Loving", "Grateful", "Hopeful", "Comforted",
+        "Relieved", "Inspired", "Tender", "Compassionate", "Empathetic", "Sentimental",
+        "Energetic", "Playful", "Peaceful", "Content", "Satisfied", "Optimistic",
+        "Enthusiastic", "Blissful", "Radiant", "Uplifted", "Merry"
     ]
 }
 
 ];
-    
+
 /* =====================================
    EMOTION TYPES
 ===================================== */
 
 const difficultEmotions = new Set([
 
-    /* 🔴 ANGRY */
+    "Angry", "Irritated", "Frustrated", "Furious", "Agitated", "Enraged",
+    "Hostile", "Resentful", "Bitter", "Provoked", "Defensive", "Impatient",
+    "Restless", "Suspicious", "Wary", "Alarmed", "Uneasy", "Overwhelmed",
+    "Exasperated", "Annoyed", "Irrational", "Vengeful", "Outraged", "Infuriated",
+    "Offended", "Aggravated", "Irate",
 
-    "Angry",
-    "Irritated",
-    "Frustrated",
-    "Furious",
-    "Agitated",
-    "Enraged",
-    "Hostile",
-    "Resentful",
-    "Bitter",
-    "Provoked",
-    "Defensive",
-    "Impatient",
-    "Restless",
-    "Suspicious",
-    "Wary",
-    "Alarmed",
-    "Uneasy",
-    "Overwhelmed",
-    "Exasperated",
-    "Annoyed",
-    "Irrational",
-    "Vengeful",
-    "Outraged",
-    "Infuriated",
-    "Offended",
-    "Aggravated",
-    "Irate",
+    "Sad", "Hopeless", "Miserable", "Despairing", "Lonely", "Empty",
+    "Melancholic", "Pessimistic", "Discouraged", "Grieving", "Guilty", "Ashamed",
+    "Regretful", "Insecure", "Abandoned", "Defeated", "Helpless", "Heartbroken",
+    "Pitiful", "Sorrowful", "Dejected", "Depressed", "Forlorn", "Rejected",
+    "Disappointed", "Wounded",
 
-    /* 🔵 SAD */
+    "Overthinking", "Confused", "Perplexed", "Doubtful", "Uncertain", "Hesitant",
+    "Indecisive", "Detached", "Aloof", "Cold", "Withdrawn", "Concerned",
+    "Worried", "Anxious", "Rigid", "Obsessive", "Paranoid", "Cynical",
+    "Preoccupied", "Distracted", "Stressed", "Tense",
 
-    "Sad",
-    "Hopeless",
-    "Miserable",
-    "Despairing",
-    "Lonely",
-    "Empty",
-    "Melancholic",
-    "Pessimistic",
-    "Discouraged",
-    "Grieving",
-    "Guilty",
-    "Ashamed",
-    "Regretful",
-    "Insecure",
-    "Abandoned",
-    "Defeated",
-    "Helpless",
-    "Heartbroken",
-    "Pitiful",
-    "Sorrowful",
-    "Dejected",
-    "Depressed",
-    "Forlorn",
-    "Rejected",
-    "Disappointed",
-    "Wounded",
+    "Proud", "Arrogant", "Egotistical", "Conceited", "Superior", "Narcissistic",
+    "Envious", "Jealous", "Boastful", "Vain", "Self-important", "Entitled",
+    "Condescending", "Smug", "Domineering", "Controlling", "Judgmental",
 
-    /* ⚫ SERIOUS */
-
-    "Overthinking",
-    "Confused",
-    "Perplexed",
-    "Doubtful",
-    "Uncertain",
-    "Hesitant",
-    "Indecisive",
-    "Detached",
-    "Aloof",
-    "Cold",
-    "Withdrawn",
-    "Concerned",
-    "Worried",
-    "Anxious",
-    "Rigid",
-    "Obsessive",
-    "Paranoid",
-    "Cynical",
-    "Preoccupied",
-    "Distracted",
-    "Stressed",
-    "Tense",
-
-    /* ⚪ CONFIDENT */
-
-    "Proud",
-    "Arrogant",
-    "Egotistical",
-    "Conceited",
-    "Superior",
-    "Narcissistic",
-    "Envious",
-    "Jealous",
-    "Boastful",
-    "Vain",
-    "Self-important",
-    "Entitled",
-    "Condescending",
-    "Smug",
-    "Domineering",
-    "Controlling",
-    "Judgmental",
-
-    /* 🟢 HAPPY */
-
-    "Frenzied",
-    "Hyperactive",
-    "Reckless",
-    "Wild",
-    "Excessive",
-    "Impulsive",
-    "Careless",
-    "Overstimulated",
-    "Manic",
-    "Uncontrolled",
-    "Overexcited",
-    "Hyped"
+    "Frenzied", "Hyperactive", "Reckless", "Wild", "Excessive", "Impulsive",
+    "Careless", "Overstimulated", "Manic", "Uncontrolled", "Overexcited", "Hyped"
 
 ]);
 
 
 const constructiveEmotions = new Set([
 
-    "Passionate",
-    "Determined",
-    "Driven",
-    "Assertive",
-    "Courageous",
-    "Bold",
-    "Energetic",
-    "Motivated",
-    "Fierce",
-    "Resolute",
-    "Persistent",
-    "Protective",
-    "Decisive",
-    "Empowered",
+    "Passionate", "Determined", "Driven", "Assertive", "Courageous", "Bold",
+    "Energetic", "Motivated", "Fierce", "Resolute", "Persistent", "Protective",
+    "Decisive", "Empowered",
 
-    "Reflective",
-    "Contemplative",
-    "Thoughtful",
-    "Sensitive",
-    "Vulnerable",
-    "Understanding",
-    "Compassionate",
-    "Empathetic",
-    "Introspective",
-    "Appreciative",
-    "Humble",
-    "Forgiving",
-    "Patient",
-    "Self-aware",
-    "Honest",
-    "Mindful",
-    "Considerate",
+    "Reflective", "Contemplative", "Thoughtful", "Sensitive", "Vulnerable",
+    "Understanding", "Compassionate", "Empathetic", "Introspective", "Appreciative",
+    "Humble", "Forgiving", "Patient", "Self-aware", "Honest", "Mindful", "Considerate",
 
-    "Calm",
-    "Composed",
-    "Focused",
-    "Rational",
-    "Analytical",
-    "Objective",
-    "Disciplined",
-    "Observant",
-    "Curious",
-    "Practical",
-    "Logical",
-    "Grounded",
-    "Stable",
-    "Attentive",
-    "Deliberate",
-    "Wise",
-    "Reasonable",
-    "Cautious",
+    "Calm", "Composed", "Focused", "Rational", "Analytical", "Objective",
+    "Disciplined", "Observant", "Curious", "Practical", "Logical", "Grounded",
+    "Stable", "Attentive", "Deliberate", "Wise", "Reasonable", "Cautious",
 
-    "Confident",
-    "Charismatic",
-    "Ambitious",
-    "Elegant",
-    "Charming",
-    "Playful",
-    "Successful",
-    "Triumphant",
-    "Capable",
-    "Independent",
-    "Fearless",
-    "Inspiring",
-    "Hopeful",
-    "Optimistic",
-    "Self-assured",
-    "Resourceful",
-    "Competent",
-    "Brave",
+    "Confident", "Charismatic", "Ambitious", "Elegant", "Charming", "Playful",
+    "Successful", "Triumphant", "Capable", "Independent", "Fearless", "Inspiring",
+    "Hopeful", "Optimistic", "Self-assured", "Resourceful", "Competent", "Brave",
 
-    "Happy",
-    "Joyful",
-    "Overjoyed",
-    "Cheerful",
-    "Delighted",
-    "Excited",
-    "Amused",
-    "Affectionate",
-    "Loving",
-    "Grateful",
-    "Comforted",
-    "Relieved",
-    "Inspired",
-    "Tender",
-    "Sentimental",
-    "Energetic",
-    "Peaceful",
-    "Content",
-    "Satisfied",
-    "Enthusiastic",
-    "Blissful",
-    "Radiant",
-    "Uplifted",
-    "Merry"
+    "Happy", "Joyful", "Overjoyed", "Cheerful", "Delighted", "Excited",
+    "Amused", "Affectionate", "Loving", "Grateful", "Comforted", "Relieved",
+    "Inspired", "Tender", "Sentimental", "Energetic", "Peaceful", "Content",
+    "Satisfied", "Enthusiastic", "Blissful", "Radiant", "Uplifted", "Merry"
 
 ]);
 
 
 /* =====================================
-   EMOTIONAL CYCLE
+   EMOTIONAL GROWTH ADVICE (multiple variations per category
+   so entries don't often repeat the same suggestion)
 ===================================== */
 
-const emotionalCycle = {
+const emotionalGrowthOptions = {
 
-    "Angry": {
-        target: "Confident",
-        positive: [
-            "Passionate",
-            "Determined",
-            "Bold",
-            "Assertive"
-        ],
-        advice:
-            "Try turning anger or frustration into determination, confidence, or constructive action."
-    },
+    "Angry": [
+        {
+            target: "Confident",
+            positive: ["Passionate", "Determined", "Bold", "Assertive"],
+            advice: "Try turning anger or frustration into determination, confidence, or constructive action."
+        },
+        {
+            target: "Confident",
+            positive: ["Driven", "Resolute", "Empowered", "Fierce"],
+            advice: "Channel this intensity into resolve — let it drive you toward a goal instead of a grudge."
+        },
+        {
+            target: "Confident",
+            positive: ["Courageous", "Protective", "Decisive", "Motivated"],
+            advice: "Anger often signals something you care about. Use it to make a clear, courageous decision."
+        },
+        {
+            target: "Confident",
+            positive: ["Assertive", "Bold", "Persistent", "Empowered"],
+            advice: "Instead of letting frustration simmer, speak up. Assertiveness channels anger productively."
+        },
+        {
+            target: "Confident",
+            positive: ["Passionate", "Fierce", "Driven", "Determined"],
+            advice: "Let the heat of this feeling fuel focus rather than conflict. Find one bold step forward."
+        }
+    ],
 
-    "Confident": {
-        target: "Sad",
-        positive: [
-            "Reflective",
-            "Contemplative",
-            "Vulnerable",
-            "Self-aware"
-        ],
-        advice:
-            "If confidence is becoming pride or ego, take a moment to reflect and consider another perspective."
-    },
+    "Confident": [
+        {
+            target: "Sad",
+            positive: ["Reflective", "Contemplative", "Vulnerable", "Self-aware"],
+            advice: "If confidence is becoming pride or ego, take a moment to reflect and consider another perspective."
+        },
+        {
+            target: "Sad",
+            positive: ["Humble", "Understanding", "Empathetic", "Introspective"],
+            advice: "Strong confidence grows stronger with humility. Pause and check in with how others might feel."
+        },
+        {
+            target: "Sad",
+            positive: ["Thoughtful", "Sensitive", "Appreciative", "Honest"],
+            advice: "Before moving forward, ask yourself honestly whether pride is clouding your judgment."
+        },
+        {
+            target: "Sad",
+            positive: ["Compassionate", "Forgiving", "Mindful", "Considerate"],
+            advice: "Success feels better when it's shared. Take a moment for compassion toward others."
+        },
+        {
+            target: "Sad",
+            positive: ["Vulnerable", "Self-aware", "Patient", "Reflective"],
+            advice: "If you're feeling superior or entitled, a little vulnerability can bring you back to center."
+        }
+    ],
 
-    "Sad": {
-        target: "Happy",
-        positive: [
-            "Hopeful",
-            "Inspired",
-            "Grateful",
-            "Relieved"
-        ],
-        advice:
-            "If sadness becomes overwhelming, look for something small that can restore hope, comfort, or gratitude."
-    },
+    "Sad": [
+        {
+            target: "Happy",
+            positive: ["Hopeful", "Inspired", "Grateful", "Relieved"],
+            advice: "If sadness becomes overwhelming, look for something small that can restore hope, comfort, or gratitude."
+        },
+        {
+            target: "Happy",
+            positive: ["Comforted", "Content", "Peaceful", "Optimistic"],
+            advice: "Give yourself permission to rest. A small comfort right now can start to shift things."
+        },
+        {
+            target: "Happy",
+            positive: ["Grateful", "Uplifted", "Tender", "Relieved"],
+            advice: "Try naming one thing, however small, that you're grateful for today."
+        },
+        {
+            target: "Happy",
+            positive: ["Hopeful", "Affectionate", "Loving", "Content"],
+            advice: "Reach out to someone who makes you feel supported. Connection can ease this weight."
+        },
+        {
+            target: "Happy",
+            positive: ["Inspired", "Radiant", "Enthusiastic", "Optimistic"],
+            advice: "This feeling is valid, and it can pass. Consider one gentle activity that usually lifts your mood."
+        }
+    ],
 
-    "Happy": {
-        target: "Serious",
-        positive: [
-            "Calm",
-            "Composed",
-            "Grounded",
-            "Controlled"
-        ],
-        advice:
-            "If excitement becomes excessive or exhausting, slow down and give yourself space to become calm and grounded."
-    },
+    "Happy": [
+        {
+            target: "Serious",
+            positive: ["Calm", "Composed", "Grounded", "Controlled"],
+            advice: "If excitement becomes excessive or exhausting, slow down and give yourself space to become calm and grounded."
+        },
+        {
+            target: "Serious",
+            positive: ["Focused", "Stable", "Attentive", "Composed"],
+            advice: "Big energy is great — pair it with a moment of focus so it doesn't burn out too fast."
+        },
+        {
+            target: "Serious",
+            positive: ["Grounded", "Deliberate", "Patient", "Calm"],
+            advice: "Enjoy the high, but take a breath before your next decision so it's a grounded one."
+        },
+        {
+            target: "Serious",
+            positive: ["Mindful", "Controlled", "Stable", "Rational"],
+            advice: "Excitement can blur judgment. A brief pause helps keep things steady."
+        },
+        {
+            target: "Serious",
+            positive: ["Composed", "Observant", "Calm", "Practical"],
+            advice: "Ride the wave, but check in with yourself so the excitement stays sustainable."
+        }
+    ],
 
-    "Serious": {
-        target: "Angry",
-        positive: [
-            "Passionate",
-            "Determined",
-            "Driven",
-            "Assertive"
-        ],
-        advice:
-            "If overthinking or detachment is keeping you stuck, consider turning your thoughts into passionate, purposeful action."
-    }
+    "Serious": [
+        {
+            target: "Angry",
+            positive: ["Passionate", "Determined", "Driven", "Assertive"],
+            advice: "If overthinking or detachment is keeping you stuck, consider turning your thoughts into passionate, purposeful action."
+        },
+        {
+            target: "Angry",
+            positive: ["Bold", "Motivated", "Resolute", "Fierce"],
+            advice: "Analysis has its limits. At some point, a decisive, bold step matters more than more thinking."
+        },
+        {
+            target: "Angry",
+            positive: ["Assertive", "Empowered", "Driven", "Decisive"],
+            advice: "Uncertainty can freeze you. Pick one small action and commit to it with purpose."
+        },
+        {
+            target: "Angry",
+            positive: ["Determined", "Courageous", "Protective", "Persistent"],
+            advice: "Worry often hides a need for action. What's one thing you could do today about it?"
+        },
+        {
+            target: "Angry",
+            positive: ["Passionate", "Motivated", "Fierce", "Bold"],
+            advice: "Instead of circling the same thoughts, let your conviction turn into decisive movement."
+        }
+    ]
 
 };
 
@@ -1022,38 +754,35 @@ const emotionalCycle = {
 ===================================== */
 
 let selectedCategory = null;
-
 let selectedEmotion = null;
-
 let entries = [];
+let highlightRange = "daily";
 
+(function loadEntries() {
 
-try {
+    try {
 
-    entries =
-        JSON.parse(
-            localStorage.getItem(
-                "emotiaryEntries"
-            )
-        ) || [];
+        const current = localStorage.getItem("innerMindEntries");
 
-} catch (error) {
+        if (current) {
+            entries = JSON.parse(current) || [];
+            return;
+        }
 
-    entries = [];
+        // Migrate data saved under the app's previous name, if present.
+        const legacy = localStorage.getItem("emotiaryEntries");
 
-}
-    
-/* =====================================
-   DAILY MOST PROMINENT EMOTIONS
-===================================== */
+        if (legacy) {
+            entries = JSON.parse(legacy) || [];
+            localStorage.setItem("innerMindEntries", JSON.stringify(entries));
+        }
 
-function getEntryDateKey(entry) {
+    } catch (error) {
+        entries = [];
+    }
 
-    const date = new Date(entry.id);
+})();
 
-    return date.toLocaleDateString("en-CA");
-
-}
 
 /* =====================================
    CREATE CATEGORIES
@@ -1061,79 +790,35 @@ function getEntryDateKey(entry) {
 
 function createCategories() {
 
-    const container =
-        document.getElementById(
-            "categoryList"
-        );
-
+    const container = document.getElementById("categoryList");
     container.innerHTML = "";
 
-    categories.forEach(
-        function(category) {
+    categories.forEach(function(category) {
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "category";
+        button.textContent = category.name;
+        button.style.borderColor = category.color;
 
-            button.type = "button";
+        button.addEventListener("click", function() {
 
-            button.className =
-                "category";
+            selectedCategory = category;
+            selectedEmotion = null;
 
-            button.textContent =
-                category.name;
+            document.querySelectorAll(".category").forEach(function(btn) {
+                btn.classList.remove("active");
+            });
 
-            button.style.borderColor =
-                category.color;
+            button.classList.add("active");
 
+            createEmotions(category);
 
-            button.addEventListener(
-                "click",
-                function() {
+        });
 
-                    selectedCategory =
-                        category;
+        container.appendChild(button);
 
-                    selectedEmotion =
-                        null;
-
-
-                    document
-                        .querySelectorAll(
-                            ".category"
-                        )
-                        .forEach(
-                            function(btn) {
-
-                                btn.classList
-                                    .remove(
-                                        "active"
-                                    );
-
-                            }
-                        );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    createEmotions(
-                        category
-                    );
-
-                }
-            );
-
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -1144,69 +829,45 @@ function createCategories() {
 
 function createEmotions(category) {
 
-    const container =
-        document.getElementById(
-            "emotionList"
-        );
-
+    const container = document.getElementById("emotionList");
     container.innerHTML = "";
 
+    category.emotions.forEach(function(emotion) {
 
-    category.emotions.forEach(
-        function(emotion) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "emotion";
+        button.textContent = emotion;
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+        button.addEventListener("click", function() {
 
-            button.type = "button";
+            // Clicking the already-selected emotion again clears it,
+            // falling back to the main emotion as the default.
+            if (selectedEmotion === emotion) {
 
-            button.className =
-                "emotion";
+                selectedEmotion = null;
 
-            button.textContent =
-                emotion;
+                document.querySelectorAll(".emotion").forEach(function(btn) {
+                    btn.classList.remove("active");
+                });
 
+                return;
 
-            button.addEventListener(
-                "click",
-                function() {
+            }
 
-                    selectedEmotion =
-                        emotion;
+            selectedEmotion = emotion;
 
+            document.querySelectorAll(".emotion").forEach(function(btn) {
+                btn.classList.remove("active");
+            });
 
-                    document
-                        .querySelectorAll(
-                            ".emotion"
-                        )
-                        .forEach(
-                            function(btn) {
+            button.classList.add("active");
 
-                                btn.classList
-                                    .remove(
-                                        "active"
-                                    );
+        });
 
-                            }
-                        );
+        container.appendChild(button);
 
-
-                    button.classList.add(
-                        "active"
-                    );
-
-                }
-            );
-
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -1215,148 +876,60 @@ function createEmotions(category) {
    SAVE ENTRY
 ===================================== */
 
-document
-    .getElementById("saveButton")
-    .addEventListener(
-        "click",
-        function() {
+document.getElementById("saveButton").addEventListener("click", function() {
 
-            const text =
-                document
-                    .getElementById(
-                        "diaryText"
-                    )
-                    .value
-                    .trim();
+    const text = document.getElementById("diaryText").value.trim();
 
+    if (text === "") {
+        showMessage("Please write something first.");
+        return;
+    }
 
-            if (text === "") {
+    if (selectedCategory === null) {
+        showMessage("Please choose a main emotion.");
+        return;
+    }
 
-                showMessage(
-                    "Please write something first."
-                );
+    // Specific emotion is optional — default to the main emotion itself.
+    const emotionToSave = selectedEmotion || selectedCategory.name;
 
-                return;
+    const entry = {
+        id: Date.now(),
+        number: entries.length + 1,
+        date: new Date().toLocaleString(),
+        text: text,
+        category: selectedCategory.name,
+        color: selectedCategory.color,
+        emotion: emotionToSave
+    };
 
-            }
+    entries.push(entry);
 
+    try {
+        localStorage.setItem("innerMindEntries", JSON.stringify(entries));
+    } catch (error) {
+        showMessage("Could not save this entry.");
+        return;
+    }
 
-            if (selectedCategory === null) {
+    document.getElementById("diaryText").value = "";
 
-                showMessage(
-                    "Please choose a main emotion."
-                );
+    selectedCategory = null;
+    selectedEmotion = null;
 
-                return;
+    document.querySelectorAll(".category").forEach(function(button) {
+        button.classList.remove("active");
+    });
 
-            }
+    document.getElementById("emotionList").innerHTML = "";
 
+    showMessage("Entry saved successfully! 💜");
 
-            if (selectedEmotion === null) {
+    displayEntries();
+    updateAnalysis();
+    updateDailyEmotions();
 
-                showMessage(
-                    "Please choose a specific emotion."
-                );
-
-                return;
-
-            }
-
-
-            const entry = {
-
-                id: Date.now(),
-
-                number:
-                    entries.length + 1,
-
-                date:
-                    new Date().toLocaleString(),
-
-                text:
-                    text,
-
-                category:
-                    selectedCategory.name,
-
-                color:
-                    selectedCategory.color,
-
-                emotion:
-                    selectedEmotion
-
-            };
-
-
-            entries.push(entry);
-
-
-            try {
-
-                localStorage.setItem(
-                    "emotiaryEntries",
-                    JSON.stringify(
-                        entries
-                    )
-                );
-
-            } catch (error) {
-
-                showMessage(
-                    "Could not save this entry."
-                );
-
-                return;
-
-            }
-
-
-            document
-                .getElementById(
-                    "diaryText"
-                )
-                .value = "";
-
-
-            selectedCategory = null;
-
-            selectedEmotion = null;
-
-
-            document
-                .querySelectorAll(
-                    ".category"
-                )
-                .forEach(
-                    function(button) {
-
-                        button.classList
-                            .remove(
-                                "active"
-                            );
-
-                    }
-                );
-
-
-            document
-                .getElementById(
-                    "emotionList"
-                )
-                .innerHTML = "";
-
-
-            showMessage(
-                "Entry saved successfully! 💜"
-            );
-
-
-            displayEntries();
-
-            updateAnalysis();
-
-        }
-    );
+});
 
 
 /* =====================================
@@ -1365,24 +938,12 @@ document
 
 function showMessage(text) {
 
-    const message =
-        document.getElementById(
-            "message"
-        );
+    const message = document.getElementById("message");
+    message.textContent = text;
 
-    message.textContent =
-        text;
-
-
-    setTimeout(
-        function() {
-
-            message.textContent =
-                "";
-
-        },
-        3000
-    );
+    setTimeout(function() {
+        message.textContent = "";
+    }, 3000);
 
 }
 
@@ -1392,14 +953,7 @@ function showMessage(text) {
 ===================================== */
 
 function getLatest100() {
-
-    return entries.slice(
-        Math.max(
-            0,
-            entries.length - 100
-        )
-    );
-
+    return entries.slice(Math.max(0, entries.length - 100));
 }
 
 
@@ -1409,190 +963,77 @@ function getLatest100() {
 
 function updateAnalysis() {
 
-    const content =
-        document.getElementById(
-            "analysisContent"
-        );
-
-    const range =
-        document.getElementById(
-            "analysisRange"
-        );
-
+    const content = document.getElementById("analysisContent");
+    const range = document.getElementById("analysisRange");
 
     if (entries.length < 100) {
 
-        range.textContent =
-            entries.length +
-            " / 100 entries recorded";
-
+        range.textContent = entries.length + " / 100 entries recorded";
 
         content.innerHTML =
             '<div class="locked">' +
             '<h3>🔒 Emotional Profile Locked</h3>' +
-            '<p>' +
-            'Complete 100 diary entries to unlock your emotional pie chart.' +
-            '</p>' +
+            '<p>Complete 100 diary entries to unlock your emotional pie chart.</p>' +
             '</div>';
 
         return;
 
     }
 
-
-    const latest =
-        getLatest100();
-
-
+    const latest = getLatest100();
     const counts = {};
 
+    categories.forEach(function(category) {
+        counts[category.name] = 0;
+    });
 
-    categories.forEach(
-        function(category) {
-
-            counts[
-                category.name
-            ] = 0;
-
+    latest.forEach(function(entry) {
+        if (counts[entry.category] !== undefined) {
+            counts[entry.category]++;
         }
-    );
+    });
 
+    const firstNumber = latest[0].number;
+    const lastNumber = latest[latest.length - 1].number;
 
-    latest.forEach(
-        function(entry) {
-
-            if (
-                counts[
-                    entry.category
-                ] !== undefined
-            ) {
-
-                counts[
-                    entry.category
-                ]++;
-
-            }
-
-        }
-    );
-
-
-    const firstNumber =
-        latest[0].number;
-
-    const lastNumber =
-        latest[
-            latest.length - 1
-        ].number;
-
-
-    range.textContent =
-        "Analyzing entries #" +
-        firstNumber +
-        "–#" +
-        lastNumber;
-
+    range.textContent = "Analyzing entries #" + firstNumber + "–#" + lastNumber;
 
     content.innerHTML = "";
 
+    const chartArea = document.createElement("div");
+    chartArea.className = "chart-area";
 
-    const chartArea =
-        document.createElement(
-            "div"
-        );
-
-    chartArea.className =
-        "chart-area";
-
-
-    const canvas =
-        document.createElement(
-            "canvas"
-        );
-
+    const canvas = document.createElement("canvas");
     canvas.width = 420;
-
     canvas.height = 420;
 
+    chartArea.appendChild(canvas);
 
-    chartArea.appendChild(
-        canvas
-    );
+    const legend = document.createElement("div");
+    legend.className = "chart-legend";
 
+    chartArea.appendChild(legend);
+    content.appendChild(chartArea);
 
-    const legend =
-        document.createElement(
-            "div"
-        );
+    drawPieChart(canvas, counts);
 
-    legend.className =
-        "chart-legend";
+    categories.forEach(function(category) {
 
+        const percentage = Math.round((counts[category.name] / 100) * 100);
 
-    chartArea.appendChild(
-        legend
-    );
+        const item = document.createElement("div");
+        item.className = "legend-item";
 
+        item.innerHTML =
+            '<div class="legend-left">' +
+            '<span class="legend-dot" style="background:' + category.color + '"></span>' +
+            '<span>' + category.name + '</span>' +
+            '</div>' +
+            '<strong>' + percentage + '%</strong>';
 
-    content.appendChild(
-        chartArea
-    );
+        legend.appendChild(item);
 
-
-    drawPieChart(
-        canvas,
-        counts
-    );
-
-
-    categories.forEach(
-        function(category) {
-
-            const percentage =
-                Math.round(
-                    (
-                        counts[
-                            category.name
-                        ] / 100
-                    ) * 100
-                );
-
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-            item.className =
-                "legend-item";
-
-
-            item.innerHTML =
-
-                '<div class="legend-left">' +
-
-                '<span class="legend-dot" ' +
-                'style="background:' +
-                category.color +
-                '"></span>' +
-
-                '<span>' +
-                category.name +
-                '</span>' +
-
-                '</div>' +
-
-                '<strong>' +
-                percentage +
-                '%</strong>';
-
-
-            legend.appendChild(
-                item
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -1601,133 +1042,50 @@ function updateAnalysis() {
    DRAW PIE CHART
 ===================================== */
 
-function drawPieChart(
-    canvas,
-    counts
-) {
+function drawPieChart(canvas, counts) {
 
-    const ctx =
-        canvas.getContext(
-            "2d"
-        );
-
-
+    const ctx = canvas.getContext("2d");
     const total = 100;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 170;
 
-    const centerX =
-        canvas.width / 2;
+    let startAngle = -Math.PI / 2;
 
-    const centerY =
-        canvas.height / 2;
+    categories.forEach(function(category) {
 
-    const radius =
-        170;
+        const value = counts[category.name];
+        const slice = (value / total) * Math.PI * 2;
 
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, startAngle + slice);
+        ctx.closePath();
 
-    let startAngle =
-        -Math.PI / 2;
+        ctx.fillStyle = category.color;
+        ctx.fill();
 
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 3;
+        ctx.stroke();
 
-    categories.forEach(
-        function(category) {
+        startAngle += slice;
 
-            const value =
-                counts[
-                    category.name
-                ];
-
-
-            const slice =
-                (
-                    value / total
-                ) *
-                Math.PI *
-                2;
-
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                centerX,
-                centerY
-            );
-
-            ctx.arc(
-                centerX,
-                centerY,
-                radius,
-                startAngle,
-                startAngle + slice
-            );
-
-            ctx.closePath();
-
-
-            ctx.fillStyle =
-                category.color;
-
-            ctx.fill();
-
-
-            ctx.strokeStyle =
-                "#ffffff";
-
-            ctx.lineWidth = 3;
-
-            ctx.stroke();
-
-
-            startAngle += slice;
-
-        }
-    );
-
-
-    /* center hole */
+    });
 
     ctx.beginPath();
-
-    ctx.arc(
-        centerX,
-        centerY,
-        65,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle =
-        "#ffffff";
-
+    ctx.arc(centerX, centerY, 65, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
 
+    ctx.fillStyle = "#302b27";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("100", centerX, centerY - 10);
 
-    ctx.fillStyle =
-        "#302b27";
-
-    ctx.textAlign =
-        "center";
-
-    ctx.textBaseline =
-        "middle";
-
-    ctx.font =
-        "bold 20px Arial";
-
-    ctx.fillText(
-        "100",
-        centerX,
-        centerY - 10
-    );
-
-
-    ctx.font =
-        "14px Arial";
-
-    ctx.fillText(
-        "entries",
-        centerX,
-        centerY + 15
-    );
+    ctx.font = "14px Arial";
+    ctx.fillText("entries", centerX, centerY + 15);
 
 }
 
@@ -1736,39 +1094,35 @@ function drawPieChart(
    ADVICE
 ===================================== */
 
-function getAdvice(category, emotion) {
+function getAdvice(category, emotion, entryId) {
 
     if (!difficultEmotions.has(emotion)) {
         return "";
     }
 
-    const cycle = emotionalCycle[category];
+    const options = emotionalGrowthOptions[category];
 
-    if (!cycle) {
+    if (!options || options.length === 0) {
         return "";
     }
 
+    // Deterministic per-entry pick (based on the entry's own id) so the
+    // suggestion stays consistent on re-render but varies across entries.
+    const index = entryId % options.length;
+    const cycle = options[index];
+
     return `
         <div class="advice">
-
-            <strong>
-                🌱 Possible direction
-            </strong>
-
-            <p>
-                ${cycle.advice}
-            </p>
-
+            <strong>🌱 Possible direction</strong>
+            <p>${cycle.advice}</p>
             <p>
                 <strong>Consider:</strong>
-                ${cycle.target}
-                →
-                ${cycle.positive.join(", ")}
+                ${cycle.target} → ${cycle.positive.join(", ")}
             </p>
-
         </div>
     `;
 }
+
 
 /* =====================================
    DISPLAY ENTRIES
@@ -1776,120 +1130,45 @@ function getAdvice(category, emotion) {
 
 function displayEntries() {
 
-    const container =
-        document.getElementById(
-            "entries"
-        );
-
-
+    const container = document.getElementById("entries");
     container.innerHTML = "";
 
-
     if (entries.length === 0) {
-
-        container.innerHTML =
-            '<div class="empty">' +
-            'No entries yet.' +
-            '</div>';
-
+        container.innerHTML = '<div class="empty">No entries yet.</div>';
         return;
-
     }
 
+    entries.slice().reverse().forEach(function(entry) {
 
-    entries
-        .slice()
-        .reverse()
-        .forEach(
-            function(entry) {
+        const div = document.createElement("div");
+        div.className = "entry";
 
-                const div =
-                    document.createElement(
-                        "div"
-                    );
+        // If no specific emotion was chosen, entry.emotion equals
+        // entry.category — show it once instead of "Category · Category".
+        const emotionLabel = (entry.emotion === entry.category)
+            ? entry.category
+            : entry.category + " · " + entry.emotion;
 
+        div.innerHTML =
+            '<div class="entry-number">Entry #' + entry.number + '</div>' +
+            '<div class="entry-date">' + escapeHTML(entry.date) + '</div>' +
+            '<p>' + escapeHTML(entry.text) + '</p>' +
+            '<span class="entry-emotion" style="background:' + entry.color + '">' +
+            escapeHTML(emotionLabel) +
+            '</span>' +
+            getAdvice(entry.category, entry.emotion, entry.id) +
+            '<br>' +
+            '<button class="delete-button" type="button">Delete Entry</button>';
 
-                div.className =
-                    "entry";
+        const deleteButton = div.querySelector(".delete-button");
 
+        deleteButton.addEventListener("click", function() {
+            deleteEntry(entry.id);
+        });
 
-                div.innerHTML =
+        container.appendChild(div);
 
-                    '<div class="entry-number">' +
-                    'Entry #' +
-                    entry.number +
-                    '</div>' +
-
-                    '<div class="entry-date">' +
-                    escapeHTML(
-                        entry.date
-                    ) +
-                    '</div>' +
-
-                    '<p>' +
-                    escapeHTML(
-                        entry.text
-                    ) +
-                    '</p>' +
-
-                    '<span ' +
-                    'class="entry-emotion" ' +
-                    'style="background:' +
-                    entry.color +
-                    '">' +
-
-                    escapeHTML(
-                        entry.category
-                    ) +
-
-                    ' · ' +
-
-                    escapeHTML(
-                        entry.emotion
-                    ) +
-
-                    '</span>' +
-
-                    getAdvice(
-                        entry.category,
-                        entry.emotion
-                    ) +
-
-                    '<br>' +
-
-                    '<button ' +
-                    'class="delete-button" ' +
-                    'type="button">' +
-
-                    'Delete Entry' +
-
-                    '</button>';
-
-
-                const deleteButton =
-                    div.querySelector(
-                        ".delete-button"
-                    );
-
-
-                deleteButton.addEventListener(
-                    "click",
-                    function() {
-
-                        deleteEntry(
-                            entry.id
-                        );
-
-                    }
-                );
-
-
-                container.appendChild(
-                    div
-                );
-
-            }
-        );
+    });
 
 }
 
@@ -1900,308 +1179,288 @@ function displayEntries() {
 
 function deleteEntry(id) {
 
-    entries =
-        entries.filter(
-            function(entry) {
+    entries = entries.filter(function(entry) {
+        return entry.id !== id;
+    });
 
-                return entry.id !== id;
-
-            }
-        );
-
-
-    localStorage.setItem(
-        "emotiaryEntries",
-        JSON.stringify(
-            entries
-        )
-    );
-
+    localStorage.setItem("innerMindEntries", JSON.stringify(entries));
 
     displayEntries();
-
     updateAnalysis();
+    updateDailyEmotions();
 
 }
 
-    /* =====================================
+
+/* =====================================
+   EMOTIONAL HIGHLIGHTS (DAILY / WEEKLY / MONTHLY)
+===================================== */
+
+function getWeekStart(date) {
+
+    const d = new Date(date);
+    const day = d.getDay();
+
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - day);
+
+    return d;
+
+}
+
+function topOf(counts) {
+
+    let bestKey = null;
+    let bestVal = -1;
+
+    for (const key in counts) {
+        if (counts[key] > bestVal) {
+            bestVal = counts[key];
+            bestKey = key;
+        }
+    }
+
+    return { name: bestKey, count: bestVal };
+
+}
+
+function groupEntries(range) {
+
+    const groups = {};
+
+    entries.forEach(function(entry) {
+
+        const date = new Date(entry.id);
+        let key;
+        let label;
+
+        if (range === "daily") {
+
+            key = date.toLocaleDateString("en-CA");
+            label = date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+
+        } else if (range === "weekly") {
+
+            const weekStart = getWeekStart(date);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+
+            key = weekStart.toLocaleDateString("en-CA");
+            label =
+                weekStart.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+                " – " +
+                weekEnd.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+        } else {
+
+            key = date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+            label = date.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+        }
+
+        if (!groups[key]) {
+            groups[key] = {
+                label: label,
+                categoryCounts: {},
+                emotionCounts: {},
+                total: 0
+            };
+        }
+
+        const group = groups[key];
+
+        group.total++;
+        group.categoryCounts[entry.category] = (group.categoryCounts[entry.category] || 0) + 1;
+        group.emotionCounts[entry.emotion] = (group.emotionCounts[entry.emotion] || 0) + 1;
+
+    });
+
+    return groups;
+
+}
+
+function updateDailyEmotions() {
+
+    const container = document.getElementById("dailyEmotionContent");
+    container.innerHTML = "";
+
+    if (entries.length === 0) {
+        container.innerHTML = '<div class="empty">No entries yet.</div>';
+        return;
+    }
+
+    const groups = groupEntries(highlightRange);
+    const sortedKeys = Object.keys(groups).sort().reverse();
+
+    const limit = highlightRange === "daily" ? 7 : 6;
+    const shown = sortedKeys.slice(0, limit);
+
+    shown.forEach(function(key) {
+
+        const group = groups[key];
+        const topCategory = topOf(group.categoryCounts);
+        const topEmotion = topOf(group.emotionCounts);
+
+        const categoryObj = categories.find(function(c) {
+            return c.name === topCategory.name;
+        });
+
+        const color = categoryObj ? categoryObj.color : "#8064a8";
+
+        let emotionLabel = topCategory.name;
+
+        if (topEmotion.name && topEmotion.name !== topCategory.name) {
+            emotionLabel += " · " + topEmotion.name;
+        }
+
+        const div = document.createElement("div");
+        div.className = "entry";
+
+        div.innerHTML =
+            '<div class="entry-number">' + escapeHTML(group.label) + '</div>' +
+            '<div class="entry-date">' + group.total + (group.total === 1 ? " entry" : " entries") + '</div>' +
+            '<span class="entry-emotion" style="background:' + color + '">' +
+            escapeHTML(emotionLabel) +
+            '</span>';
+
+        container.appendChild(div);
+
+    });
+
+}
+
+document.querySelectorAll("#highlightToggle .toggle-btn").forEach(function(btn) {
+
+    btn.addEventListener("click", function() {
+
+        document.querySelectorAll("#highlightToggle .toggle-btn").forEach(function(b) {
+            b.classList.remove("active");
+        });
+
+        btn.classList.add("active");
+        highlightRange = btn.dataset.range;
+
+        updateDailyEmotions();
+
+    });
+
+});
+
+
+/* =====================================
    BACKUP & RESTORE
 ===================================== */
 
-const backupButton =
-    document.getElementById(
-        "backupButton"
-    );
-
-const restoreButton =
-    document.getElementById(
-        "restoreButton"
-    );
-
-const restoreFile =
-    document.getElementById(
-        "restoreFile"
-    );
-
-const backupMessage =
-    document.getElementById(
-        "backupMessage"
-    );
-
-
-/* =====================================
-   BACKUP MESSAGE
-===================================== */
+const backupButton = document.getElementById("backupButton");
+const restoreButton = document.getElementById("restoreButton");
+const restoreFile = document.getElementById("restoreFile");
+const backupMessage = document.getElementById("backupMessage");
 
 function showBackupMessage(text) {
 
-    backupMessage.textContent =
-        text;
+    backupMessage.textContent = text;
 
-    setTimeout(
-        function() {
-
-            backupMessage.textContent =
-                "";
-
-        },
-        3000
-    );
+    setTimeout(function() {
+        backupMessage.textContent = "";
+    }, 3000);
 
 }
 
+backupButton.addEventListener("click", function() {
 
-/* =====================================
-   DOWNLOAD BACKUP
-===================================== */
+    if (entries.length === 0) {
+        showBackupMessage("There are no diary entries to back up.");
+        return;
+    }
 
-backupButton.addEventListener(
-    "click",
-    function() {
+    const backupData = {
+        app: "InnerMind",
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        entries: entries
+    };
 
-        if (entries.length === 0) {
+    const json = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
 
-            showBackupMessage(
-                "There are no diary entries to back up."
+    const link = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+
+    link.href = url;
+    link.download = "innermind-backup-" + date + ".json";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+    showBackupMessage("Backup downloaded successfully! 💜");
+
+});
+
+restoreButton.addEventListener("click", function() {
+    restoreFile.click();
+});
+
+restoreFile.addEventListener("change", function(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+
+        try {
+
+            const backupData = JSON.parse(e.target.result);
+
+            // Accept both the current app name and the app's previous name
+            // (Emotiary) so older backups can still be restored.
+            const validApp =
+                backupData &&
+                (backupData.app === "InnerMind" || backupData.app === "Emotiary");
+
+            if (!validApp || !Array.isArray(backupData.entries)) {
+                throw new Error("Invalid backup file.");
+            }
+
+            const confirmed = confirm(
+                "Restoring this backup will replace your current diary entries. Continue?"
             );
 
-            return;
+            if (!confirmed) {
+                restoreFile.value = "";
+                return;
+            }
 
+            entries = backupData.entries;
+
+            localStorage.setItem("innerMindEntries", JSON.stringify(entries));
+
+            displayEntries();
+            updateAnalysis();
+            updateDailyEmotions();
+
+            showBackupMessage("Backup restored successfully! 💜");
+
+        } catch (error) {
+            showBackupMessage("Invalid InnerMind backup file.");
         }
 
+        restoreFile.value = "";
 
-        const backupData = {
+    };
 
-            app:
-                "Emotiary",
+    reader.readAsText(file);
 
-            version:
-                1,
+});
 
-            exportedAt:
-                new Date().toISOString(),
-
-            entries:
-                entries
-
-        };
-
-
-        const json =
-            JSON.stringify(
-                backupData,
-                null,
-                2
-            );
-
-
-        const blob =
-            new Blob(
-                [json],
-                {
-                    type:
-                        "application/json"
-                }
-            );
-
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-
-        const date =
-            new Date()
-                .toISOString()
-                .slice(
-                    0,
-                    10
-                );
-
-
-        link.href =
-            url;
-
-
-        link.download =
-            "emotiary-backup-" +
-            date +
-            ".json";
-
-
-        document.body.appendChild(
-            link
-        );
-
-
-        link.click();
-
-
-        document.body.removeChild(
-            link
-        );
-
-
-        URL.revokeObjectURL(
-            url
-        );
-
-
-        showBackupMessage(
-            "Backup downloaded successfully! 💜"
-        );
-
-    }
-);
-
-
-/* =====================================
-   OPEN RESTORE FILE
-===================================== */
-
-restoreButton.addEventListener(
-    "click",
-    function() {
-
-        restoreFile.click();
-
-    }
-);
-
-
-/* =====================================
-   RESTORE BACKUP
-===================================== */
-
-restoreFile.addEventListener(
-    "change",
-    function(event) {
-
-        const file =
-            event.target.files[0];
-
-
-        if (!file) {
-            return;
-        }
-
-
-        const reader =
-            new FileReader();
-
-
-        reader.onload =
-            function(e) {
-
-                try {
-
-                    const backupData =
-                        JSON.parse(
-                            e.target.result
-                        );
-
-
-                    if (
-                        !backupData ||
-                        backupData.app !== "Emotiary" ||
-                        !Array.isArray(
-                            backupData.entries
-                        )
-                    ) {
-
-                        throw new Error(
-                            "Invalid backup file."
-                        );
-
-                    }
-
-
-                    const confirmed =
-                        confirm(
-                            "Restoring this backup will replace your current diary entries. Continue?"
-                        );
-
-
-                    if (!confirmed) {
-
-                        restoreFile.value =
-                            "";
-
-                        return;
-
-                    }
-
-
-                    entries =
-                        backupData.entries;
-
-
-                    localStorage.setItem(
-                        "emotiaryEntries",
-                        JSON.stringify(
-                            entries
-                        )
-                    );
-
-
-                    displayEntries();
-
-                    updateAnalysis();
-
-
-                    showBackupMessage(
-                        "Backup restored successfully! 💜"
-                    );
-
-
-                } catch (error) {
-
-                    showBackupMessage(
-                        "Invalid Emotiary backup file."
-                    );
-
-                }
-
-
-                restoreFile.value =
-                    "";
-
-            };
-
-
-        reader.readAsText(
-            file
-        );
-
-    }
-);
 
 /* =====================================
    SECURITY
@@ -2209,15 +1468,8 @@ restoreFile.addEventListener(
 
 function escapeHTML(text) {
 
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        text;
-
+    const div = document.createElement("div");
+    div.textContent = text;
 
     return div.innerHTML;
 
@@ -2229,11 +1481,8 @@ function escapeHTML(text) {
 ===================================== */
 
 createCategories();
-
 displayEntries();
-
 updateAnalysis();
-
 updateDailyEmotions();
 
 </script>
