@@ -11,11 +11,26 @@
     box-sizing: border-box;
 }
 
+/* ===================================================
+   AGED METAL ARCHIVE — GLOBAL BACKGROUND
+=================================================== */
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f0eb;
-    color: #302b27;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #e7ded0;
+    background:
+        repeating-linear-gradient(115deg,
+            rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px,
+            transparent 1px, transparent 3px),
+        repeating-linear-gradient(25deg,
+            rgba(0,0,0,0.035) 0px, rgba(0,0,0,0.035) 1px,
+            transparent 1px, transparent 5px),
+        radial-gradient(ellipse at 20% -10%, rgba(255,255,255,0.05), transparent 45%),
+        radial-gradient(ellipse at 80% 110%, rgba(0,0,0,0.35), transparent 55%),
+        linear-gradient(160deg, #4c5257 0%, #3a3f43 35%, #2c3033 70%, #202325 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
 .container {
@@ -26,15 +41,23 @@ body {
 }
 
 h1 {
-    color: #70548f;
+    color: #d8c9a3;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.container > p {
+    color: #c9bfae;
 }
 
 .card {
-    background: white;
-    border-radius: 18px;
+    background: #eee7db;
+    color: #302b27;
+    border-radius: 10px;
     padding: 20px;
     margin-top: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,.06);
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.4),
+        inset 0 0 0 1px rgba(0,0,0,0.08);
 }
 
 .hint {
@@ -43,15 +66,51 @@ h1 {
     margin: -6px 0 10px;
 }
 
+/* ===================================================
+   NEW ENTRY — OLD WOODEN WRITING DESK
+=================================================== */
+
+.desk-card {
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 2px,
+            transparent 2px, transparent 5px),
+        repeating-linear-gradient(89deg,
+            rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px,
+            transparent 1px, transparent 30px),
+        radial-gradient(ellipse at 30% 20%, rgba(0,0,0,0.15), transparent 45%),
+        radial-gradient(ellipse at 75% 80%, rgba(0,0,0,0.2), transparent 50%),
+        linear-gradient(100deg, #6b4028 0%, #5a3420 30%, #4a2c1c 60%, #3a2013 100%);
+    color: #f2e9da;
+}
+
+.desk-card h2, .desk-card h3 {
+    color: #f2e9da;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.desk-card .hint {
+    color: #d8c6ab;
+}
+
+/* Aged paper writing surface */
+
 textarea {
     width: 100%;
     min-height: 170px;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
+    border: 1px solid #c9b892;
+    border-radius: 4px;
     resize: vertical;
-    font-family: inherit;
+    font-family: Georgia, 'Times New Roman', serif;
     font-size: 16px;
+    color: #3a2f1f;
+    background:
+        radial-gradient(ellipse at 15% 20%, rgba(180,150,100,0.12), transparent 35%),
+        radial-gradient(ellipse at 85% 85%, rgba(150,120,80,0.12), transparent 40%),
+        linear-gradient(180deg, rgba(0,0,0,0.05) 0%, transparent 4%, transparent 96%, rgba(0,0,0,0.06) 100%),
+        linear-gradient(135deg, #f7efd9 0%, #f2e8cf 100%);
+    box-shadow: inset 0 0 12px rgba(90,60,20,0.18);
 }
 
 textarea:focus {
@@ -59,30 +118,125 @@ textarea:focus {
     border-color: #8064a8;
 }
 
-/* CATEGORY BUTTONS */
+/* CATEGORY BUTTONS — "memory fragment" cinematic windows */
 
 .category-list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    gap: 10px;
     margin: 15px 0;
 }
 
 .category {
-    padding: 14px 5px;
-    border: 3px solid;
-    background: white;
-    border-radius: 12px;
+    position: relative;
+    aspect-ratio: 3 / 4;
+    padding: 0;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+.category .scene-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 2.2s ease;
+}
+
+.category .scene-layer.active {
+    opacity: 1;
+}
+
+.category .scene-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 35%, transparent 55%, rgba(0,0,0,0.65) 100%),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.35) 100%);
+    pointer-events: none;
+}
+
+.category .category-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6px;
+    text-align: center;
+    color: #f5efe2;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.85);
+    pointer-events: none;
 }
 
 .category.active {
-    background: #302b27;
-    color: white;
+    border-color: #f0e2bb;
+    box-shadow: 0 0 0 2px rgba(240,226,187,0.5), 0 6px 14px rgba(0,0,0,0.45);
 }
 
-/* SPECIFIC EMOTIONS */
+@media (prefers-reduced-motion: reduce) {
+    .category .scene-layer {
+        transition: opacity 0.2s linear;
+    }
+}
+
+/* MEMORY-FRAGMENT SCENES — 5 palettes × 5 shapes = 25 painted looks */
+
+.scene-red   { --p1:#f2b23a; --p2:#c94a2e; --p3:#5a1810; --p4:#1c0704; }
+.scene-blue  { --p1:#8fa9c6; --p2:#3a5578; --p3:#182c4a; --p4:#060c18; }
+.scene-black { --p1:#767a7d; --p2:#3f4245; --p3:#201f1d; --p4:#050504; }
+.scene-white { --p1:#fffaf0; --p2:#f0e2bb; --p3:#d6c294; --p4:#a98f5e; }
+.scene-green { --p1:#cdeea0; --p2:#7fac5a; --p3:#3d5f34; --p4:#12220e; }
+
+.scene-shape-1 {
+    background:
+        radial-gradient(circle at 28% 72%, var(--p1) 0%, transparent 7%),
+        radial-gradient(circle at 62% 38%, var(--p1) 0%, transparent 5%),
+        radial-gradient(circle at 46% 58%, var(--p2) 0%, transparent 42%),
+        radial-gradient(ellipse at 50% 85%, var(--p3), transparent 70%),
+        var(--p4);
+}
+
+.scene-shape-2 {
+    background:
+        repeating-linear-gradient(4deg,
+            rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px,
+            transparent 1px, transparent 10px),
+        radial-gradient(ellipse at 50% 15%, var(--p1), transparent 40%),
+        linear-gradient(180deg, var(--p2) 0%, var(--p3) 60%, var(--p4) 100%);
+}
+
+.scene-shape-3 {
+    background:
+        repeating-linear-gradient(48deg,
+            var(--p2) 0px, var(--p2) 6px,
+            var(--p3) 6px, var(--p3) 14px),
+        radial-gradient(circle at 30% 30%, var(--p1), transparent 30%),
+        var(--p4);
+}
+
+.scene-shape-4 {
+    background:
+        radial-gradient(circle at 20% 25%, var(--p1) 0%, transparent 4%),
+        radial-gradient(circle at 40% 60%, var(--p1) 0%, transparent 3%),
+        radial-gradient(circle at 65% 20%, var(--p1) 0%, transparent 4%),
+        radial-gradient(circle at 75% 55%, var(--p1) 0%, transparent 3%),
+        radial-gradient(circle at 55% 80%, var(--p1) 0%, transparent 4%),
+        radial-gradient(ellipse at 50% 50%, var(--p2), var(--p3) 65%, var(--p4) 100%);
+}
+
+.scene-shape-5 {
+    background:
+        linear-gradient(100deg, transparent 40%, var(--p1) 48%, transparent 56%),
+        radial-gradient(ellipse at 50% 45%, var(--p2), var(--p3) 55%, var(--p4) 100%);
+}
+
+
+
+/* SPECIFIC EMOTIONS — small paper tags on the desk */
 
 .emotion-list {
     display: grid;
@@ -92,11 +246,13 @@ textarea:focus {
 
 .emotion {
     padding: 11px;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    background: linear-gradient(160deg, #f7efd9 0%, #ecdfbd 100%);
+    border: 1px solid #c9b892;
+    border-radius: 4px;
     cursor: pointer;
     text-align: left;
+    color: #3a2f1f;
+    font-family: Georgia, 'Times New Roman', serif;
 }
 
 .emotion.active {
@@ -389,6 +545,80 @@ textarea:focus {
     100% { background-position: 0 0, 0 0, 0 0, 0% 40%; }
 }
 
+/* EMOTIONAL PROFILE — OLD WOOD FRAME + CANVAS */
+
+.frame-card {
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 2px,
+            transparent 2px, transparent 6px),
+        repeating-linear-gradient(89deg,
+            rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px,
+            transparent 1px, transparent 26px),
+        linear-gradient(145deg, #5c3a22 0%, #4a2e1a 40%, #3a2313 75%, #2c1a0e 100%);
+    color: #f2e9da;
+    padding: 22px;
+}
+
+.frame-card h2 {
+    color: #f0e2bb;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.frame-card .analysis-range {
+    color: #d8c6ab;
+}
+
+.canvas-panel {
+    margin-top: 10px;
+    padding: 18px 12px;
+    border-radius: 4px;
+    background:
+        repeating-linear-gradient(0deg,
+            rgba(0,0,0,0.035) 0px, rgba(0,0,0,0.035) 1px,
+            transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg,
+            rgba(0,0,0,0.035) 0px, rgba(0,0,0,0.035) 1px,
+            transparent 1px, transparent 3px),
+        linear-gradient(160deg, #e8dcc0 0%, #ddcfa8 100%);
+    box-shadow:
+        inset 0 3px 10px rgba(0,0,0,0.35),
+        inset 0 0 0 1px rgba(0,0,0,0.08);
+    color: #302b27;
+}
+
+.canvas-panel .locked h3,
+.canvas-panel .locked p,
+.canvas-panel .empty {
+    color: #4a3f30;
+}
+
+.canvas-panel .legend-item {
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+/* YOUR DIARY — LEATHER-BOUND JOURNAL */
+
+.journal-card {
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05), transparent 30%),
+        radial-gradient(circle at 80% 75%, rgba(0,0,0,0.25), transparent 40%),
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px,
+            transparent 1px, transparent 4px),
+        linear-gradient(160deg, #4a2e22 0%, #3a2419 45%, #2b1a12 100%);
+    color: #f0e6d6;
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.4),
+        inset 0 0 40px rgba(0,0,0,0.4),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.journal-card h2 {
+    color: #f0e2bb;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
 /* PIE CHART */
 
 .chart-area {
@@ -429,23 +659,53 @@ canvas {
     border-radius: 50%;
 }
 
-/* ENTRIES */
+/* ENTRIES — aged paper, older memories look older */
 
 .entry {
-    border: 1px solid #ddd;
-    border-radius: 14px;
-    padding: 15px;
-    margin-top: 12px;
-    background: #fffdfb;
+    border-radius: 4px;
+    padding: 16px;
+    margin-top: 14px;
+    color: #3a2f1f;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+
+.entry.paper-recent {
+    background: linear-gradient(160deg, #fffdfa 0%, #faf6ec 100%);
+    border: 1px solid #e8e0cd;
+}
+
+.entry.paper-months {
+    background:
+        radial-gradient(ellipse at 80% 90%, rgba(150,120,70,0.12), transparent 50%),
+        linear-gradient(160deg, #f7edd3 0%, #efe0bc 100%);
+    border: 1px solid #d8c393;
+}
+
+.entry.paper-years {
+    background:
+        radial-gradient(ellipse at 15% 85%, rgba(120,90,50,0.18), transparent 45%),
+        radial-gradient(ellipse at 85% 15%, rgba(120,90,50,0.14), transparent 45%),
+        linear-gradient(160deg, #ecd8a8 0%, #dcbd82 100%);
+    border: 1px solid #b8965c;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3), inset 0 0 20px rgba(90,60,20,0.08);
+}
+
+.entry.paper-ancient {
+    background:
+        radial-gradient(ellipse at 10% 10%, rgba(80,55,25,0.25), transparent 50%),
+        radial-gradient(ellipse at 90% 90%, rgba(80,55,25,0.3), transparent 50%),
+        linear-gradient(160deg, #d9bd8a 0%, #b8955f 60%, #a17f4c 100%);
+    border: 1px solid #8a6a3a;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.35), inset 0 0 26px rgba(60,40,15,0.18);
 }
 
 .entry-number {
     font-weight: bold;
-    color: #70548f;
+    color: #8a5a2a;
 }
 
 .entry-date {
-    color: #777;
+    color: #6b5c46;
     font-size: 12px;
     margin: 5px 0 12px;
 }
@@ -462,12 +722,12 @@ canvas {
 .advice {
     margin-top: 15px;
     padding: 15px;
-    background: #f3eef8;
-    border-radius: 12px;
+    background: rgba(120,90,40,0.12);
+    border-radius: 8px;
 }
 
 .advice strong {
-    color: #70548f;
+    color: #6b4423;
 }
 
 .delete-button {
@@ -528,7 +788,7 @@ what you felt.
      NEW ENTRY
 ========================= -->
 
-<div class="card">
+<div class="card desk-card">
 
 <h2>📔 New Entry</h2>
 
@@ -604,13 +864,13 @@ Save Entry
      100 ENTRY ANALYSIS
 ========================= -->
 
-<div class="card">
+<div class="card frame-card">
 
 <h2>📊 Emotional Profile</h2>
 
 <p class="analysis-range" id="analysisRange"></p>
 
-<div id="analysisContent"></div>
+<div id="analysisContent" class="canvas-panel"></div>
 
 </div>
 
@@ -619,7 +879,7 @@ Save Entry
      DIARY
 ========================= -->
 
-<div class="card">
+<div class="card journal-card">
 
 <h2>📚 Your Diary</h2>
 
@@ -676,251 +936,85 @@ Keep a copy of your InnerMind entries or move them to another device.
 ===================================== */
 
 const categories = [
+
 {
     id: "red",
     name: "Angry",
-    color: "#d9534f",
+    color: "#b23a2e",
     emotions: [
-        "Angry",
-        "Passionate",
-        "Eager",
-        "Fierce",
-        "Determined",
-        "Protective",
-        "Driven",
-        "Bold",
-        "Brave",
-        "Tenacious",
-        "Motivated",
-        "Energetic",
-        "Spirited",
-        "Zealous",
-        "Resolute",
-        "Defiant",
-        "Forceful",
-        "Competitive",
-        "Assertive",
-        "Ambitious",
-        "Courageous",
-
-        "Irritated",
-        "Frustrated",
-        "Hostile",
-        "Resentful",
-        "Furious",
-        "Rageful",
-        "Aggressive",
-        "Vengeful",
-        "Bitter",
-        "Enraged",
-        "Outraged",
-        "Infuriated",
-        "Agitated",
-        "Combative",
-        "Violent",
-        "Spiteful",
-        "Vindictive",
-        "Explosive",
-        "Irrational",
-        "Uncontrollable"
+        "Angry", "Irritated", "Frustrated", "Furious", "Agitated", "Enraged",
+        "Hostile", "Resentful", "Bitter", "Exasperated", "Annoyed", "Irrational",
+        "Vengeful", "Outraged", "Infuriated", "Offended", "Aggravated", "Irate",
+        "Passionate", "Determined", "Driven", "Assertive", "Courageous", "Bold",
+        "Energetic", "Motivated", "Fierce", "Resolute", "Persistent", "Protective",
+        "Decisive", "Empowered"
     ]
 },
+
 {
     id: "blue",
     name: "Sad",
-    color: "#4d82b8",
+    color: "#3a5578",
     emotions: [
-        "Sad",
-        "Reflective",
-        "Compassionate",
-        "Empathetic",
-        "Nostalgic",
-        "Sensitive",
-        "Understanding",
-        "Tender",
-        "Caring",
-        "Forgiving",
-        "Patient",
-        "Introspective",
-        "Sympathetic",
-        "Gentle",
-        "Warm",
-        "Nurturing",
-        "Receptive",
-        "Considerate",
-        "Humble",
-        "Sincere",
-        "Sentimental",
-
-        "Depressed",
-        "Hopeless",
-        "Melancholic",
-        "Pessimistic",
-        "Lonely",
-        "Miserable",
-        "Grieving",
-        "Despairing",
-        "Defeated",
-        "Heartbroken",
-        "Dejected",
-        "Regretful",
-        "Sorrowful",
-        "Tearful",
-        "Distressed",
-        "Devastated",
-        "Desolate",
-        "Empty",
-        "Helpless",
-        "Brokenhearted"
+        "Sad", "Hopeless", "Miserable", "Despairing", "Lonely", "Empty",
+        "Melancholic", "Pessimistic", "Discouraged", "Grieving", "Guilty", "Ashamed",
+        "Regretful", "Insecure", "Abandoned", "Defeated", "Helpless", "Heartbroken",
+        "Pitiful", "Sorrowful", "Dejected", "Depressed", "Forlorn", "Rejected",
+        "Disappointed", "Wounded",
+        "Reflective", "Contemplative", "Thoughtful", "Sensitive", "Vulnerable",
+        "Understanding", "Compassionate", "Empathetic", "Introspective", "Appreciative",
+        "Humble", "Forgiving", "Patient", "Self-aware", "Honest", "Mindful", "Considerate"
     ]
 },
+
 {
     id: "black",
     name: "Serious",
-    color: "#333333",
+    color: "#2b2925",
     emotions: [
-        "Serious",
-        "Calm",
-        "Calculating",
-        "Focused",
-        "Thoughtful",
-        "Disciplined",
-        "Responsible",
-        "Rational",
-        "Observant",
-        "Analytical",
-        "Strategic",
-        "Prepared",
-        "Attentive",
-        "Composed",
-        "Grounded",
-        "Level-headed",
-        "Methodical",
-        "Logical",
-        "Precise",
-        "Practical",
-        "Conscientious",
-
-        "Aloof",
-        "Overthinking",
-        "Fearful",
-        "Suspicious",
-        "Tense",
-        "Rigid",
-        "Paranoid",
-        "Distrustful",
-        "Obsessive",
-        "Withdrawn",
-        "Guarded",
-        "Stressed",
-        "Nervous",
-        "Worried",
-        "Uneasy",
-        "Apprehensive",
-        "Fixated",
-        "Detached",
-        "Cold",
-        "Stern"
+        "Serious", "Overthinking", "Confused", "Perplexed", "Doubtful", "Uncertain",
+        "Hesitant", "Indecisive", "Detached", "Aloof", "Cold", "Withdrawn",
+        "Suspicious", "Concerned", "Worried", "Anxious", "Rigid", "Obsessive",
+        "Paranoid", "Cynical", "Preoccupied", "Distracted", "Stressed", "Tense",
+        "Calm", "Composed", "Focused", "Rational", "Analytical", "Objective",
+        "Patient", "Controlled", "Disciplined", "Observant", "Curious", "Thoughtful",
+        "Practical", "Logical", "Grounded", "Stable", "Attentive", "Mindful",
+        "Deliberate", "Wise", "Reasonable", "Cautious"
     ]
 },
+
 {
     id: "white",
     name: "Confident",
-    color: "#777777",
+    color: "#c9b083",
     emotions: [
-        "Confident",
-        "Proud",
-        "Self-assured",
-        "Important",
-        "Empowered",
-        "Independent",
-        "Capable",
-        "Competent",
-        "Decisive",
-        "Daring",
-        "Resilient",
-        "Self-reliant",
-        "Fearless",
-        "Charismatic",
-        "Persuasive",
-        "Influential",
-        "Resourceful",
-        "Assured",
-        "Secure",
-        "Successful",
-        "Victorious",
-
-        "Ashamed",
-        "Arrogant",
-        "Insecure",
-        "Conceited",
-        "Defensive",
-        "Inadequate",
-        "Self-conscious",
-        "Pretentious",
-        "Domineering",
+        "Proud", "Arrogant", "Egotistical", "Conceited", "Superior", "Narcissistic",
+        "Envious", "Jealous", "Competitive", "Boastful", "Vain", "Self-important",
+        "Entitled", "Condescending", "Insecure", "Smug", "Domineering", "Controlling",
         "Judgmental",
-        "Controlling",
-        "Vain",
-        "Humiliated",
-        "Inferior",
-        "Timid",
-        "Doubtful",
-        "Hesitant",
-        "Powerless",
-        "Snobbish",
-        "Egotistical"
+        "Confident", "Charismatic", "Bold", "Courageous", "Ambitious", "Determined",
+        "Elegant", "Charming", "Playful", "Assertive", "Successful", "Triumphant",
+        "Empowered", "Capable", "Independent", "Fearless", "Inspiring", "Hopeful",
+        "Optimistic", "Self-assured", "Resourceful", "Competent", "Brave"
     ]
 },
+
 {
     id: "green",
     name: "Happy",
-    color: "#4f9b68",
+    color: "#4a7a3e",
     emotions: [
-        "Happy",
-        "Optimistic",
-        "Joyful",
-        "Cheerful",
-        "Excited",
-        "Grateful",
-        "Playful",
-        "Delighted",
-        "Amused",
-        "Content",
-        "Satisfied",
-        "Hopeful",
-        "Ecstatic",
-        "Blissful",
-        "Elated",
-        "Euphoric",
-        "Jubilant",
-        "Radiant",
-        "Thrilled",
-        "Loving",
-        "Affectionate",
-
-        "Manic",
-        "Overoptimistic",
-        "Reckless",
-        "Overexcited",
-        "Excessive",
-        "Hyperactive",
-        "Impulsive",
-        "Giddy",
-        "Foolish",
-        "Careless",
-        "Overwhelmed",
-        "Frenzied",
-        "Hyper",
-        "Overstimulated",
-        "Restless",
-        "Silly",
-        "Childish",
-        "Naive",
-        "Unrestrained",
-        "Hedonistic"
+        "Euphoric", "Frenzied", "Hyperactive", "Reckless", "Wild", "Excessive",
+        "Impulsive", "Careless", "Overstimulated", "Manic", "Restless", "Distracted",
+        "Uncontrolled", "Overexcited", "Hyped",
+        "Happy", "Joyful", "Overjoyed", "Cheerful", "Delighted", "Excited",
+        "Amused", "Affectionate", "Loving", "Grateful", "Hopeful", "Comforted",
+        "Relieved", "Inspired", "Tender", "Compassionate", "Empathetic", "Sentimental",
+        "Energetic", "Playful", "Peaceful", "Content", "Satisfied", "Optimistic",
+        "Enthusiastic", "Blissful", "Radiant", "Uplifted", "Merry"
     ]
 }
+
 ];
 
 /* =====================================
@@ -1171,7 +1265,20 @@ let highlightRange = "daily";
    CREATE CATEGORIES
 ===================================== */
 
+// Guards against duplicate/accumulating timers if categories are
+// ever re-rendered — each card gets exactly one 60s rotation timer.
+let categorySceneTimers = [];
+
+function clearCategorySceneTimers() {
+    categorySceneTimers.forEach(function(id) {
+        clearInterval(id);
+    });
+    categorySceneTimers = [];
+}
+
 function createCategories() {
+
+    clearCategorySceneTimers();
 
     const container = document.getElementById("categoryList");
     container.innerHTML = "";
@@ -1181,8 +1288,34 @@ function createCategories() {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "category";
-        button.textContent = category.name;
         button.style.borderColor = category.color;
+        button.setAttribute("aria-label", category.name);
+
+        // Five painted "memory fragment" scenes, stacked and crossfaded.
+        const layers = [];
+
+        for (let i = 1; i <= 5; i++) {
+
+            const layer = document.createElement("div");
+            layer.className = "scene-layer scene-" + category.id + " scene-shape-" + i;
+
+            if (i === 1) {
+                layer.classList.add("active");
+            }
+
+            button.appendChild(layer);
+            layers.push(layer);
+
+        }
+
+        const vignette = document.createElement("div");
+        vignette.className = "scene-vignette";
+        button.appendChild(vignette);
+
+        const label = document.createElement("div");
+        label.className = "category-label";
+        label.textContent = category.name;
+        button.appendChild(label);
 
         button.addEventListener("click", function() {
 
@@ -1200,6 +1333,24 @@ function createCategories() {
         });
 
         container.appendChild(button);
+
+        // Each card rotates its own 5 scenes independently, forever,
+        // regardless of which category is currently selected — so
+        // there is exactly one interval per card, never duplicated.
+        let activeIndex = 0;
+
+        const timerId = setInterval(function() {
+
+            const nextIndex = (activeIndex + 1) % layers.length;
+
+            layers[activeIndex].classList.remove("active");
+            layers[nextIndex].classList.add("active");
+
+            activeIndex = nextIndex;
+
+        }, 60000);
+
+        categorySceneTimers.push(timerId);
 
     });
 
@@ -1515,6 +1666,26 @@ function getAdvice(category, emotion, entryId) {
    DISPLAY ENTRIES
 ===================================== */
 
+function getPaperAgeClass(entry) {
+
+    const ageDays = (Date.now() - entry.id) / (1000 * 60 * 60 * 24);
+
+    if (ageDays < 30) {
+        return "paper-recent";
+    }
+
+    if (ageDays < 365) {
+        return "paper-months";
+    }
+
+    if (ageDays < 730) {
+        return "paper-years";
+    }
+
+    return "paper-ancient";
+
+}
+
 function displayEntries() {
 
     const container = document.getElementById("entries");
@@ -1528,7 +1699,7 @@ function displayEntries() {
     entries.slice().reverse().forEach(function(entry) {
 
         const div = document.createElement("div");
-        div.className = "entry";
+        div.className = "entry " + getPaperAgeClass(entry);
 
         // Show just the main emotion if no specific one was chosen.
         // Entries saved before this flag existed came from a version
