@@ -619,6 +619,217 @@ textarea:focus {
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
+/* SEARCH — inset brass-and-glass panel set into the journal cover */
+
+.search-wrap {
+    position: relative;
+    margin: 14px 0 4px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 40px 12px 14px;
+    border: 1px solid rgba(240,226,187,0.35);
+    border-radius: 8px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    color: #f2e9da;
+    background: rgba(0,0,0,0.25);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.search-input::placeholder {
+    color: #c9bda8;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #caa06a;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 0 0 2px rgba(202,160,106,0.35);
+}
+
+.search-clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #d8c9a3;
+    font-size: 18px;
+    line-height: 1;
+    padding: 6px 8px;
+    cursor: pointer;
+    display: none;
+}
+
+.search-clear.visible {
+    display: block;
+}
+
+.search-count {
+    font-size: 12px;
+    color: #d8c9a3;
+    margin: 6px 2px 0;
+}
+
+mark {
+    background: #caa06a;
+    color: #2a1710;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+/* ===================================================
+   NEW ENTRY — TRIGGER + COMPOSER MODALS
+=================================================== */
+
+.entry-trigger {
+    padding: 15px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #c9b892;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    color: #7a6a52;
+    background: linear-gradient(135deg, #f7efd9 0%, #f2e8cf 100%);
+    box-shadow: inset 0 0 12px rgba(90,60,20,0.18);
+}
+
+.entry-trigger:hover,
+.entry-trigger:focus {
+    border-color: #8064a8;
+    outline: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,15,10,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    z-index: 1000;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-overlay .modal-panel {
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin-top: 0;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.modal-header h2 {
+    flex: 1;
+    margin: 0;
+    font-size: 19px;
+}
+
+.modal-close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 26px;
+    line-height: 1;
+    padding: 0 4px;
+    cursor: pointer;
+}
+
+.done-link {
+    font-size: 14px;
+    color: #f0e2bb;
+    text-decoration: underline;
+    cursor: pointer;
+    display: none;
+    white-space: nowrap;
+}
+
+.modal-panel.focus-mode #categoryList,
+.modal-panel.focus-mode .modal-actions {
+    display: none;
+}
+
+.modal-panel.focus-mode .done-link {
+    display: inline-block;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.modal-actions .save-button {
+    width: auto;
+    margin-top: 0;
+    padding: 12px 30px;
+}
+
+/* Composer's compact main-emotion row: force one row at every
+   breakpoint (overriding the original 2-column mobile layout used
+   elsewhere) and drop text labels — color/shape alone identify each
+   card here, exactly as in the existing category art. */
+
+.composer-category-list {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 8px;
+}
+
+.composer-category-list .category-label {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .composer-category-list {
+        gap: 4px;
+    }
+    .composer-category-list .category {
+        border-width: 1px;
+    }
+}
+
+/* SAVE: pale/disabled by default inside the composer; becomes the
+   selected emotion's own color with white text once valid. */
+
+#saveButton {
+    background: #e9e4da;
+    color: #b0a493;
+}
+
+#saveButton:disabled {
+    cursor: not-allowed;
+}
+
+#saveButton.enabled {
+    color: #ffffff;
+}
+
+/* NEXT stays hidden until a specific emotion is chosen */
+
+#nextButton {
+    display: none;
+}
+
+#nextButton.visible {
+    display: inline-block;
+}
+
 /* PIE CHART */
 
 .chart-area {
@@ -785,54 +996,92 @@ what you felt.
 
 
 <!-- =========================
-     NEW ENTRY
+     NEW ENTRY (trigger)
 ========================= -->
 
 <div class="card desk-card">
 
 <h2>📔 New Entry</h2>
 
-<textarea
-    id="diaryText"
-    placeholder="What's on your mind?"
-></textarea>
-
-
-<h3>1. Choose your main emotion</h3>
-
 <div
-    class="category-list"
-    id="categoryList">
+    class="entry-trigger"
+    id="entryTrigger"
+    role="button"
+    tabindex="0">
+    What's on your mind?
+</div>
+
 </div>
 
 
-<h3>2. Choose a specific emotion (optional)</h3>
+<!-- =========================
+     NEW ENTRY COMPOSER (MODAL)
+========================= -->
 
-<p class="hint">
-If you skip this, we'll just record your main emotion.
-</p>
+<div class="modal-overlay" id="composerModal">
+<div class="modal-panel card desk-card" id="composerPanel">
 
-<div
-    class="emotion-list"
-    id="emotionList">
+    <div class="modal-header">
+        <button type="button" class="modal-close" id="composerClose" aria-label="Close">×</button>
+        <h2>New Entry</h2>
+        <span class="done-link" id="doneLink">Done</span>
+    </div>
+
+    <textarea
+        id="diaryText"
+        placeholder="What's on your mind?"
+    ></textarea>
+
+    <div
+        class="category-list composer-category-list"
+        id="categoryList">
+    </div>
+
+    <div class="modal-actions">
+        <button
+            type="button"
+            class="save-button"
+            id="saveButton">
+            SAVE
+        </button>
+    </div>
+
+    <div
+        class="message"
+        id="message">
+    </div>
+
+</div>
 </div>
 
 
-<button
-    type="button"
-    class="save-button"
-    id="saveButton">
+<!-- =========================
+     SPECIFIC EMOTION MODAL
+========================= -->
 
-Save Entry
+<div class="modal-overlay" id="specificModal">
+<div class="modal-panel card desk-card">
 
-</button>
+    <div class="modal-header">
+        <button type="button" class="modal-close" id="specificClose" aria-label="Close">×</button>
+        <h2 id="specificTitle">Emotion</h2>
+    </div>
 
+    <div
+        class="emotion-list"
+        id="emotionList">
+    </div>
 
-<div
-    class="message"
-    id="message">
+    <div class="modal-actions">
+        <button
+            type="button"
+            class="save-button"
+            id="nextButton">
+            NEXT
+        </button>
+    </div>
+
 </div>
-
 </div>
 
 <!-- =========================
@@ -882,6 +1131,19 @@ Save Entry
 <div class="card journal-card">
 
 <h2>📚 Your Diary</h2>
+
+<div class="search-wrap">
+    <input
+        type="text"
+        id="searchInput"
+        class="search-input"
+        placeholder="🔍 Search your entries..."
+        autocomplete="off"
+    >
+    <button type="button" class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+</div>
+
+<div class="search-count" id="searchCount"></div>
 
 <div id="entries"></div>
 
@@ -1234,6 +1496,7 @@ let selectedCategory = null;
 let selectedEmotion = null;
 let entries = [];
 let highlightRange = "daily";
+let searchQuery = "";
 
 (function loadEntries() {
 
@@ -1319,8 +1582,17 @@ function createCategories() {
 
         button.addEventListener("click", function() {
 
+            // Reselecting the same main emotion keeps whatever specific
+            // emotion was already chosen for it; switching to a
+            // different main emotion clears it.
+            const isSameCategory =
+                selectedCategory !== null && selectedCategory.id === category.id;
+
             selectedCategory = category;
-            selectedEmotion = null;
+
+            if (!isSameCategory) {
+                selectedEmotion = null;
+            }
 
             document.querySelectorAll(".category").forEach(function(btn) {
                 btn.classList.remove("active");
@@ -1329,6 +1601,8 @@ function createCategories() {
             button.classList.add("active");
 
             createEmotions(category);
+            openSpecificModal(category);
+            computeSaveState();
 
         });
 
@@ -1373,6 +1647,12 @@ function createEmotions(category) {
         button.className = "emotion";
         button.textContent = emotion;
 
+        // Restores the active state if this is the emotion already
+        // selected for the category (e.g. reopening the modal).
+        if (selectedEmotion === emotion) {
+            button.classList.add("active");
+        }
+
         button.addEventListener("click", function() {
 
             // Clicking the already-selected emotion again clears it,
@@ -1384,6 +1664,9 @@ function createEmotions(category) {
                 document.querySelectorAll(".emotion").forEach(function(btn) {
                     btn.classList.remove("active");
                 });
+
+                updateNextButtonVisibility();
+                computeSaveState();
 
                 return;
 
@@ -1397,13 +1680,128 @@ function createEmotions(category) {
 
             button.classList.add("active");
 
+            updateNextButtonVisibility();
+            computeSaveState();
+
         });
 
         container.appendChild(button);
 
     });
 
+    updateNextButtonVisibility();
+
 }
+
+
+/* =====================================
+   NEW ENTRY COMPOSER (MODAL CONTROLS)
+===================================== */
+
+const composerModal = document.getElementById("composerModal");
+const composerPanel = document.getElementById("composerPanel");
+const specificModal = document.getElementById("specificModal");
+const entryTrigger = document.getElementById("entryTrigger");
+const composerClose = document.getElementById("composerClose");
+const specificClose = document.getElementById("specificClose");
+const doneLink = document.getElementById("doneLink");
+const nextButton = document.getElementById("nextButton");
+const specificTitle = document.getElementById("specificTitle");
+const diaryTextarea = document.getElementById("diaryText");
+
+function openComposer() {
+
+    // Always reopen in the normal (non-focus) state — text and any
+    // emotion selection from a prior session are left untouched.
+    composerPanel.classList.remove("focus-mode");
+    composerModal.classList.add("open");
+    computeSaveState();
+
+}
+
+function closeComposer() {
+    composerModal.classList.remove("open");
+    composerPanel.classList.remove("focus-mode");
+}
+
+function enterWritingFocus() {
+    composerPanel.classList.add("focus-mode");
+}
+
+function exitWritingFocus() {
+    composerPanel.classList.remove("focus-mode");
+}
+
+function openSpecificModal(category) {
+    specificTitle.textContent = category.name;
+    specificModal.classList.add("open");
+    updateNextButtonVisibility();
+}
+
+function closeSpecificModal() {
+    specificModal.classList.remove("open");
+}
+
+function updateNextButtonVisibility() {
+    nextButton.classList.toggle("visible", selectedEmotion !== null);
+}
+
+function computeSaveState() {
+
+    const text = diaryTextarea.value.trim();
+    const valid = text !== "" && selectedCategory !== null;
+
+    const btn = document.getElementById("saveButton");
+    btn.disabled = !valid;
+
+    if (valid) {
+        btn.classList.add("enabled");
+        btn.style.background = selectedCategory.color;
+    } else {
+        btn.classList.remove("enabled");
+        btn.style.background = "";
+    }
+
+}
+
+entryTrigger.addEventListener("click", openComposer);
+
+entryTrigger.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openComposer();
+    }
+
+});
+
+composerClose.addEventListener("click", closeComposer);
+
+composerModal.addEventListener("click", function(event) {
+
+    if (event.target === composerModal) {
+        closeComposer();
+    }
+
+});
+
+specificClose.addEventListener("click", closeSpecificModal);
+
+specificModal.addEventListener("click", function(event) {
+
+    if (event.target === specificModal) {
+        closeSpecificModal();
+    }
+
+});
+
+nextButton.addEventListener("click", closeSpecificModal);
+
+doneLink.addEventListener("click", exitWritingFocus);
+
+diaryTextarea.addEventListener("focus", enterWritingFocus);
+
+diaryTextarea.addEventListener("input", computeSaveState);
 
 
 /* =====================================
@@ -1462,10 +1860,15 @@ document.getElementById("saveButton").addEventListener("click", function() {
     document.getElementById("emotionList").innerHTML = "";
 
     showMessage("Entry saved successfully! 💜");
+    computeSaveState();
 
     displayEntries();
     updateAnalysis();
     updateDailyEmotions();
+
+    // Brief pause so the success message is visible before the
+    // composer closes and resets for the next entry.
+    setTimeout(closeComposer, 600);
 
 });
 
@@ -1686,17 +2089,82 @@ function getPaperAgeClass(entry) {
 
 }
 
+// Escapes a string for safe HTML insertion, then wraps every
+// case-insensitive match of `query` in <mark> tags. Escaping happens
+// first so the query itself can't inject markup, and the query is
+// escaped for regex use separately so special characters like "?"
+// or "(" in someone's search don't throw.
+function escapeRegExp(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightMatch(rawText, query) {
+
+    const escaped = escapeHTML(rawText);
+
+    if (!query) {
+        return escaped;
+    }
+
+    const pattern = new RegExp("(" + escapeRegExp(query) + ")", "gi");
+
+    return escaped.replace(pattern, "<mark>$1</mark>");
+
+}
+
+function entryMatchesQuery(entry, query) {
+
+    if (!query) {
+        return true;
+    }
+
+    const haystack = (
+        entry.text + " " +
+        entry.category + " " +
+        entry.emotion
+    ).toLowerCase();
+
+    return haystack.indexOf(query) !== -1;
+
+}
+
 function displayEntries() {
 
     const container = document.getElementById("entries");
+    const countLabel = document.getElementById("searchCount");
     container.innerHTML = "";
 
     if (entries.length === 0) {
         container.innerHTML = '<div class="empty">No entries yet.</div>';
+        countLabel.textContent = "";
         return;
     }
 
-    entries.slice().reverse().forEach(function(entry) {
+    const query = searchQuery.trim().toLowerCase();
+
+    const filtered = entries.filter(function(entry) {
+        return entryMatchesQuery(entry, query);
+    });
+
+    if (query) {
+        countLabel.textContent = filtered.length === 0
+            ? "No entries match \"" + searchQuery.trim() + "\""
+            : filtered.length + " entr" + (filtered.length === 1 ? "y" : "ies") + " found";
+    } else {
+        countLabel.textContent = "";
+    }
+
+    if (filtered.length === 0) {
+
+        container.innerHTML = query
+            ? '<div class="empty">No entries match your search.</div>'
+            : '<div class="empty">No entries yet.</div>';
+
+        return;
+
+    }
+
+    filtered.slice().reverse().forEach(function(entry) {
 
         const div = document.createElement("div");
         div.className = "entry " + getPaperAgeClass(entry);
@@ -1717,9 +2185,9 @@ function displayEntries() {
         div.innerHTML =
             '<div class="entry-number">Entry #' + entry.number + '</div>' +
             '<div class="entry-date">' + escapeHTML(entry.date) + '</div>' +
-            '<p>' + escapeHTML(entry.text) + '</p>' +
+            '<p>' + highlightMatch(entry.text, searchQuery.trim()) + '</p>' +
             '<span class="entry-emotion" style="background:' + entry.color + '">' +
-            escapeHTML(emotionLabel) +
+            highlightMatch(emotionLabel, searchQuery.trim()) +
             '</span>' +
             getAdvice(entry.category, entry.emotion, entry.id) +
             '<br>' +
@@ -1736,6 +2204,34 @@ function displayEntries() {
     });
 
 }
+
+
+/* =====================================
+   SEARCH
+===================================== */
+
+const searchInput = document.getElementById("searchInput");
+const searchClear = document.getElementById("searchClear");
+
+searchInput.addEventListener("input", function() {
+
+    searchQuery = searchInput.value;
+    searchClear.classList.toggle("visible", searchQuery.length > 0);
+
+    displayEntries();
+
+});
+
+searchClear.addEventListener("click", function() {
+
+    searchQuery = "";
+    searchInput.value = "";
+    searchClear.classList.remove("visible");
+
+    displayEntries();
+    searchInput.focus();
+
+});
 
 
 /* =====================================
@@ -2066,6 +2562,7 @@ createCategories();
 displayEntries();
 updateAnalysis();
 updateDailyEmotions();
+computeSaveState();
 
 </script>
 
